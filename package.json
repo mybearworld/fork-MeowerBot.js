@@ -1,0 +1,22 @@
+{
+  "name": "meowerbot",
+  "version": "1.0.0",
+  "description": "Port of MeowerBot.py to Node.js",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MeowerBots/MeowerBot.js.git"
+  },
+  "author": "M.D. Walters",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MeowerBots/MeowerBot.js/issues"
+  },
+  "homepage": "https://github.com/MeowerBots/MeowerBot.js#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.0",
+    "ws": "^8.11.0"
+  }
+}
