@@ -2,7 +2,7 @@
 Port of MeowerBot.py to Node.js
 ## Installing
 ```bash
-npm install MeowerBots/MeowerBot.js
+npm install meowerbot
 ```
 ## Example Bot
 ```js
