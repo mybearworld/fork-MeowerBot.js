@@ -7,8 +7,11 @@ var pass;
 console.log("Connecting...");
 const ws = new WebSocket("wss://server.meower.org/");
 
-ws.on("message", () => {
-    if (messageData.cmd === "ping") {
+ws.on("message", (data) => {
+    var messageData = JSON.parse(data);
+    if (messageData.val.type === 1) {
+        console.log(`${messageData.val.u}: ${messageData.val.p}`);
+    } else if (messageData.cmd === "ping") {
         if (messageData.val === "I:100 | OK") {
             console.log("Ping is OK");
         } else {
@@ -52,7 +55,7 @@ export default class Bot {
         var user = username;
         var pass = password;
 
-        ws.on("open", () => {
+        ws.on("open", async () => {
             console.log("Connected");
             ws.send(`{"cmd": "direct", "val": {"cmd": "type", "val": "js"}}`);
             ws.send(`{"cmd": "direct", "val": {"cmd": "ip", "val": "${await fetch("https://api.meower.org/ip").then(res => res.text())}"}}`);
@@ -75,8 +78,6 @@ export default class Bot {
             
             if (messageData.val.type === 1) {
                 try {
-                    console.log(`New post: ${messageData.val.u}: ${messageData.val.p}`);
-
                     if (messageData.val.u === user) {
                         return;
                     } else if (messageData.val.u == "Discord") {
