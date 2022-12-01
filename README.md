@@ -18,5 +18,3 @@ bot.on_new_post(function(username, content) {
     }
 });
 ```
-## Documentation
-### 
