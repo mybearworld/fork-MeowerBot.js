@@ -8,7 +8,7 @@ npm install MeowerBots/MeowerBot.js
 ```js
 import Bot from "meowerbot";
 
-const bot = new Bot("", "", function() {
+const bot = new Bot("username", "password", function() {
     bot.post("Hello from MeowerBot.js!");
 });
 
@@ -18,3 +18,5 @@ bot.on_new_post(function(username, content) {
     }
 });
 ```
+## Documentation
+### 
