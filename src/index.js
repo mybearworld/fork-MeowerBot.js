@@ -1,6 +1,8 @@
 import WebSocket from "ws";
 import fetch from "node-fetch";
+import EventEmitter from "events";
 
+const eventEmitter = new EventEmitter();
 var user;
 var pass;
 
@@ -13,7 +15,7 @@ setInterval(() => {
 }, 10000);
 
 export default class Bot {
-    constructor(username, password, callback) {
+    constructor(username, password) {
         var user = username;
         var pass = password;
 
@@ -25,7 +27,7 @@ export default class Bot {
             ws.send(`{"cmd": "direct", "val": {"cmd": "version_chk", "val": "scratch-beta-5-r7"}}`);
             ws.send(`{"cmd": "direct", "val": {"cmd": "authpswd", "val": {"username": "${username}", "pswd": "${password}"}}}`);
             setTimeout(() => {
-                callback();
+                eventEmitter.emit("login");
             }, 1000);
         });
     }
@@ -40,13 +42,15 @@ export default class Bot {
             
             if (messageData.val.type === 1) {
                 try {
-                    if (messageData.val.u === user) {
-                        return;
-                    } else if (messageData.val.u == "Discord") {
-                        callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
-                    } else {
-                        callback(messageData.val.u, messageData.val.p);
-                    }
+                    eventEmitter.on("post", () => {
+                        if (messageData.val.u === user) {
+                            return;
+                        } else if (messageData.val.u == "Discord") {
+                            callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
+                        } else {
+                            callback(messageData.val.u, messageData.val.p);
+                        }
+                    });
                 } catch(e) {
                     return;
                 }
@@ -63,6 +67,12 @@ export default class Bot {
     onMessage(callback) {
         ws.on("message", (data) => {
             callback(JSON.parse(data));
+        });
+    }
+
+    onLogin(callback) {
+        eventEmitter.on("login", () => {
+            callback();
         });
     }
 }

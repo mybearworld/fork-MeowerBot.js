@@ -8,7 +8,9 @@ npm install meowerbot
 ```js
 import Bot from "meowerbot";
 
-const bot = new Bot("username", "password", () => {
+const bot = new Bot("username", "password");
+
+bot.onLogin(() => {
     bot.post("Hello from MeowerBot.js!");
 });
 
