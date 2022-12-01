@@ -23,7 +23,7 @@ export default class Bot {
         ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_home", "val": content}}));
     }
 
-    on_new_post(callback) {
+    handlePost(callback) {
         ws.on("message", async function(data) {
             var messageData = JSON.parse(data);
             
