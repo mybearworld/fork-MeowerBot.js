@@ -2,14 +2,11 @@ import WebSocket from "ws";
 import fetch from "node-fetch";
 import EventEmitter from "events";
 
-const eventEmitter = new EventEmitter();
-var user;
-var pass;
-
 export default class Bot {
     constructor(username, password) {
-        var user = username;
-        var pass = password;
+        this.user = username;
+        this.pass = password;
+        this.eventEmitter = new EventEmitter();
         this.ws = new WebSocket("wss://server.meower.org/");
 
         this.ws.on("open", async () => {
@@ -49,7 +46,7 @@ export default class Bot {
             var messageData = JSON.parse(data);
             if (messageData.val.type === 1) {
                 try {
-                    if (messageData.val.u === user) {
+                    if (messageData.val.u === this.user) {
                         return;
                     } else if (messageData.val.u == "Discord") {
                         callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
@@ -64,19 +61,19 @@ export default class Bot {
     }
 
     onClose(callback) {
-        eventEmitter.on("close", () => {
+        this.eventEmitter.on("close", () => {
             callback();
         });
     }
 
     onMessage(callback) {
-        eventEmitter.on("message", (data) => {
+        this.eventEmitter.on("message", (data) => {
             callback(JSON.parse(data));
         });
     }
 
     onLogin(callback) {
-        eventEmitter.on("login", () => {
+        this.eventEmitter.on("login", () => {
             callback();
         });
     }
