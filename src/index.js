@@ -32,7 +32,24 @@ export default class Bot {
             });
 
             this.ws.on("message", (data) => {
-                this.eventEmitter.emit("message");
+                this.eventEmitter.emit("message", data);
+            });
+
+            this.ws.on("message", (data) => {
+                var messageData = JSON.parse(data);
+                if (messageData.val.type === 1) {
+                    try {
+                        if (messageData.val.u === this.user) {
+                            return;
+                        } else if (messageData.val.u == "Discord") {
+                            this.eventEmitter.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
+                        } else {
+                            this.eventEmitter.emit("post", messageData.val.u, messageData.val.p);
+                        }
+                    } catch(e) {
+                        return;
+                    }
+                }
             });
         });
     }
@@ -42,21 +59,8 @@ export default class Bot {
     }
 
     onPost(callback) {
-        this.ws.on("message", (data) => {
-            var messageData = JSON.parse(data);
-            if (messageData.val.type === 1) {
-                try {
-                    if (messageData.val.u === this.user) {
-                        return;
-                    } else if (messageData.val.u == "Discord") {
-                        callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
-                    } else {
-                        callback(messageData.val.u, messageData.val.p);
-                    }
-                } catch(e) {
-                    return;
-                }
-            }
+        this.eventEmitter.on("post", (username, content) => {
+            callback(username, content);
         });
     }
 
