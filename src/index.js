@@ -2,11 +2,11 @@ import WebSocket from "ws";
 import fetch from "node-fetch";
 import EventEmitter from "events";
 
-export default class Bot {
+export default class Bot extends EventEmitter {
     constructor(username, password) {
+        super(username, password);
         this.user = username;
         this.pass = password;
-        this.eventEmitter = new EventEmitter();
         this.ws = new WebSocket("wss://server.meower.org/");
 
         this.ws.on("open", async () => {
@@ -28,11 +28,11 @@ export default class Bot {
             }, 1000);
 
             this.ws.on("close", () => {
-                this.eventEmitter.emit("close");
+                this.emit("close");
             });
 
             this.ws.on("message", (data) => {
-                this.eventEmitter.emit("message", data);
+                this.emit("message", data);
             });
 
             this.ws.on("message", (data) => {
@@ -42,9 +42,9 @@ export default class Bot {
                         if (messageData.val.u === this.user) {
                             return;
                         } else if (messageData.val.u == "Discord") {
-                            this.eventEmitter.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
+                            this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
                         } else {
-                            this.eventEmitter.emit("post", messageData.val.u, messageData.val.p);
+                            this.emit("post", messageData.val.u, messageData.val.p);
                         }
                     } catch(e) {
                         return;
@@ -59,25 +59,25 @@ export default class Bot {
     }
 
     onPost(callback) {
-        this.eventEmitter.on("post", (username, content) => {
+        this.on("post", (username, content) => {
             callback(username, content);
         });
     }
 
     onClose(callback) {
-        this.eventEmitter.on("close", () => {
+        this.on("close", () => {
             callback();
         });
     }
 
     onMessage(callback) {
-        this.eventEmitter.on("message", (data) => {
+        this.on("message", (data) => {
             callback(JSON.parse(data));
         });
     }
 
     onLogin(callback) {
-        this.eventEmitter.on("login", () => {
+        this.on("login", () => {
             callback();
         });
     }
