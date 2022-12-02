@@ -29,6 +29,14 @@ export default class Bot {
             setTimeout(() => {
                 eventEmitter.emit("login");
             }, 1000);
+
+            this.ws.on("close", () => {
+                eventEmitter.emit("close");
+            });
+
+            this.ws.on("message", (data) => {
+                eventEmitter.emit("message");
+            });
         });
     }
 
@@ -39,7 +47,6 @@ export default class Bot {
     onPost(callback) {
         this.ws.on("message", (data) => {
             var messageData = JSON.parse(data);
-            
             if (messageData.val.type === 1) {
                 try {
                     if (messageData.val.u === user) {
@@ -57,13 +64,13 @@ export default class Bot {
     }
 
     onClose(callback) {
-        this.ws.on("close", () => {
+        eventEmitter.on("close", () => {
             callback();
         });
     }
 
     onMessage(callback) {
-        this.ws.on("message", (data) => {
+        eventEmitter.on("message", (data) => {
             callback(JSON.parse(data));
         });
     }
