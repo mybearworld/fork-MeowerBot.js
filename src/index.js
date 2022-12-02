@@ -24,15 +24,15 @@ export default class Bot {
             }, 10000);
             
             setTimeout(() => {
-                eventEmitter.emit("login");
+                this.eventEmitter.emit("login");
             }, 1000);
 
             this.ws.on("close", () => {
-                eventEmitter.emit("close");
+                this.eventEmitter.emit("close");
             });
 
             this.ws.on("message", (data) => {
-                eventEmitter.emit("message");
+                this.eventEmitter.emit("message");
             });
         });
     }
