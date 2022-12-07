@@ -24,7 +24,7 @@ export default class Bot extends EventEmitter {
             }, 10000);
             
             setTimeout(() => {
-                this.eventEmitter.emit("login");
+                this.emit("login");
             }, 1000);
 
             this.ws.on("close", () => {
