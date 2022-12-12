@@ -71,7 +71,7 @@ export default class Bot extends EventEmitter {
 
     onMessage(callback) {
         this.on("message", (data) => {
-            callback(JSON.parse(data));
+            callback(data);
         });
     }
 
@@ -80,6 +80,4 @@ export default class Bot extends EventEmitter {
             callback();
         });
     }
-
-
 }
