@@ -10,7 +10,6 @@ export default class Bot extends EventEmitter {
         this.ws = new WebSocket("wss://server.meower.org/");
 
         this.ws.on("open", async () => {
-            console.log("Connected");
             this.ws.send(`{"cmd": "direct", "val": {"cmd": "type", "val": "js"}}`);
             this.ws.send(`{"cmd": "direct", "val": {"cmd": "ip", "val": "${await fetch("https://api.meower.org/ip").then(res => res.text())}"}}`);
             this.ws.send(`{"cmd": "direct", "val": "meower"}`);
@@ -81,4 +80,6 @@ export default class Bot extends EventEmitter {
             callback();
         });
     }
+
+
 }
