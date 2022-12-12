@@ -1,8 +1,8 @@
 {
   "name": "meowerbot",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Port of MeowerBot.py to Node.js",
-  "main": "src/index.js",
+  "main": "src/MeowerBot.js",
   "type": "module",
   "scripts": {},
   "repository": {
