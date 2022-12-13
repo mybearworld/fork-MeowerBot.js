@@ -5,8 +5,8 @@ import EventEmitter from "events";
 export default class Bot extends EventEmitter {
     constructor(username, password) {
         super(username, password);
-        this.user = username;
-        this.pass = password;
+        this.username = username;
+        this.password = password;
         this.ws = new WebSocket("wss://server.meower.org/");
 
         this.ws.on("open", async () => {
@@ -38,7 +38,7 @@ export default class Bot extends EventEmitter {
                 var messageData = JSON.parse(data);
                 if (messageData.val.type === 1) {
                     try {
-                        if (messageData.val.u === this.user) {
+                        if (messageData.val.u === this.username) {
                             return;
                         } else if (messageData.val.u == "Discord") {
                             this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
