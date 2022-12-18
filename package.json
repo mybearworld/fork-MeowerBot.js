@@ -3,6 +3,7 @@
   "version": "1.2.4",
   "description": "Port of MeowerBot.py to Node.js",
   "main": "src/MeowerBot.js",
+  "types": "src/MeowerBot.d.ts",
   "type": "module",
   "scripts": {},
   "repository": {
