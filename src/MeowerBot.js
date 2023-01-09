@@ -3,11 +3,11 @@ import fetch from "node-fetch";
 import EventEmitter from "events";
 
 export default class Bot extends EventEmitter {
-    constructor(username, password) {
+    constructor(username, password, server="wss://server.meower.org/") {
         super(username, password);
         this.username = username;
         this.password = password;
-        this.ws = new WebSocket("wss://server.meower.org/");
+        this.ws = new WebSocket(server);
 
         this.ws.on("open", async () => {
             this.ws.send(`{"cmd": "direct", "val": {"cmd": "type", "val": "js"}}`);
