@@ -41,9 +41,9 @@ export default class Bot extends EventEmitter {
                         if (messageData.val.u === this.username) {
                             return;
                         } else if (messageData.val.u == "Discord") {
-                            this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1]);
+                            this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1], messageData.val.post_origin);
                         } else {
-                            this.emit("post", messageData.val.u, messageData.val.p);
+                            this.emit("post", messageData.val.u, messageData.val.p, messageData.val.post_origin);
                         }
                     } catch(e) {
                         return;
@@ -58,8 +58,8 @@ export default class Bot extends EventEmitter {
     }
 
     onPost(callback) {
-        this.on("post", (username, content) => {
-            callback(username, content);
+        this.on("post", (username, content, origin) => {
+            callback(username, content, origin);
         });
     }
 
