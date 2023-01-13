@@ -84,4 +84,8 @@ export default class Bot extends EventEmitter {
             callback();
         });
     }
+
+    send(message) {
+        this.ws.send(message);
+    }
 }
