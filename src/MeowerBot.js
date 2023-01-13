@@ -86,6 +86,6 @@ export default class Bot extends EventEmitter {
     }
 
     send(message) {
-        this.ws.send(JSON.stringify(message));
+        this.ws.send(message);
     }
 }
