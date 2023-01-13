@@ -53,8 +53,12 @@ export default class Bot extends EventEmitter {
         });
     }
 
-    post(content) {
-        this.ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_home", "val": content}}));
+    post(content, id=null) {
+        if (id) {
+            this.ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_chat", "val": {"p": content, "chatid": id}}}));
+        } else {
+            this.ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_home", "val": content}}));
+        }
     }
 
     onPost(callback) {
