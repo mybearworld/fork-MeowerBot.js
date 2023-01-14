@@ -41,9 +41,9 @@ export default class Bot extends EventEmitter {
                         if (messageData.val.u === this.username) {
                             return;
                         } else if (messageData.val.u == "Discord") {
-                            this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1], messageData.val.post_origin);
+                            this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1], (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         } else {
-                            this.emit("post", messageData.val.u, messageData.val.p, messageData.val.post_origin);
+                            this.emit("post", messageData.val.u, messageData.val.p, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         }
                     } catch(e) {
                         return;
