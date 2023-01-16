@@ -35,7 +35,7 @@ export default class Bot extends EventEmitter {
             });
 
             this.ws.on("message", (data) => {
-                var messageData = JSON.parse(data);
+                let messageData = JSON.parse(data);
                 if (messageData.val.type === 1) {
                     try {
                         if (messageData.val.u === this.username) {
