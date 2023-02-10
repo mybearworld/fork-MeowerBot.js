@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import EventEmitter from "events";
 
 export default class Bot extends EventEmitter {
-    constructor(username, password, prefix=`@${username}`) {
+    constructor(username, password, server="wss://server.meower.org/") {
         super(username, password);
         this.username = username;
         this.password = password;
