@@ -3,10 +3,11 @@ import fetch from "node-fetch";
 import EventEmitter from "events";
 
 export default class Bot extends EventEmitter {
-    constructor(username, password, server="wss://server.meower.org/") {
+    constructor(username, password, prefix=`@${username}`) {
         super(username, password);
         this.username = username;
         this.password = password;
+        this.prefix = prefix
         this.ws = new WebSocket(server);
 
         this.ws.on("open", async () => {
@@ -40,7 +41,7 @@ export default class Bot extends EventEmitter {
                     try {
                         if (messageData.val.u === this.username) {
                             return;
-                        } else if (messageData.val.u == "Discord") {
+                        } else if (messageData.val.u == "Discord" || messageData.val.u == "Webhooks" || messageData.val.u == "gcbridge" || messageData.val.u == "Revower") {
                             this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1], (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         } else {
                             this.emit("post", messageData.val.u, messageData.val.p, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
