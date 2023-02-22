@@ -7,7 +7,6 @@ export default class Bot extends EventEmitter {
         super(username, password);
         this.username = username;
         this.password = password;
-        this.prefix = prefix
         this.ws = new WebSocket(server);
 
         this.ws.on("open", async () => {
