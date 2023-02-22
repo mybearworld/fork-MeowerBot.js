@@ -1,7 +1,7 @@
 type callback = any;
 
 declare class Bot {
-    constructor(username: string, password: string, server: string);
+    constructor(username: string, password: string, server?: string);
     post(content: string, origin?: string): void;
     onPost(callback: callback): void;
     onClose(callback: callback): void;
