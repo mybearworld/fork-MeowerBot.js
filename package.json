@@ -1,6 +1,6 @@
 {
   "name": "meowerbot",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "Port of MeowerBot.py to Node.js",
   "main": "src/MeowerBot.js",
   "types": "src/MeowerBot.d.ts",

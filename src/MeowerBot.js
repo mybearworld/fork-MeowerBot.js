@@ -3,6 +3,12 @@ import fetch from "node-fetch";
 import EventEmitter from "events";
 
 export default class Bot extends EventEmitter {
+    /**
+    * Connects to the (specified) server, then logs in
+    * @param {string} username The bot's username
+    * @param {string} password The bot's password
+    * @param {string} server The server to connect to, default is `wss://server.meower.org/`
+    */
     constructor(username, password, server="wss://server.meower.org/") {
         super(username, password);
         this.username = username;
@@ -46,13 +52,18 @@ export default class Bot extends EventEmitter {
                             this.emit("post", messageData.val.u, messageData.val.p, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         }
                     } catch(e) {
-                        return;
+                        console.error(e);
                     }
                 }
             });
         });
     }
 
+    /**
+    * Post to home, or a group chat, if specified
+    * @param {string} content The post content
+    * @param {string} id The group chat ID to post to, leave as `null` to post to home
+    */
     post(content, id=null) {
         if (id) {
             this.ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_chat", "val": {"p": content, "chatid": id}}}));
@@ -61,31 +72,80 @@ export default class Bot extends EventEmitter {
         }
     }
 
+    /**
+    * Executes the callback when a new post is sent
+    * @param {Function} callback The callback to use
+    */
     onPost(callback) {
         this.on("post", (username, content, origin) => {
             callback(username, content, origin);
         });
     }
 
+    /**
+    * Executes the callback when the connection is closed
+    * @param {Function} callback The callback to use
+    */
     onClose(callback) {
         this.on("close", () => {
             callback();
         });
     }
 
+
+    /**
+    * Executes the callback when a new message from the server is sent
+    * @param {Function} callback The callback to use
+    */
     onMessage(callback) {
         this.on("message", (data) => {
             callback(data);
         });
     }
 
+
+    /**
+    * Executes the callback when successfully logged in
+    * @param {Function} callback The callback to use
+    */
     onLogin(callback) {
         this.on("login", () => {
             callback();
         });
     }
 
+    /**
+    * Executes the callback when a bot command is sent
+    * @param {string} command The command to wait for
+    * @param {Function} callback The callback to use
+    */
+    onCommand(command, callback) {
+        this.on("message", (data) => {
+            let messageData = JSON.parse(data);
+            try {
+                if (messageData.val.u === this.username) {
+                    return;
+                } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
+                    if (messageData.val.p.split(": ")[1] == command) {
+                        callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1].split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                    }
+                } else {
+                    if (messageData.val.p.split(": ")[1] == command) {
+                        callback(messageData.val.u, messageData.val.p.split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                
+                    }
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        });
+    }
+
+    /**
+    * Sends a message to the server
+    * @param {Object} message The message to send
+    */
     send(message) {
-        this.ws.send(message);
+        this.ws.send(JSON.stringify(message));
     }
 }
