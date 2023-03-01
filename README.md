@@ -14,7 +14,7 @@ bot.onLogin(() => { // Runs when logged in
     bot.post("Hello from MeowerBot.js!");
 });
 
-bot.onCommand("@username help", (username, arguments, origin) => { // Runs when a new post with a bot command is sent
+bot.onCommand("help", (username, arguments, origin) => { // Runs when a new post with a bot command is sent
     bot.post("Commands: @username help", origin);
 });
 
