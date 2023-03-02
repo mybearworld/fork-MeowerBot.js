@@ -171,7 +171,7 @@ export default class Bot extends EventEmitter {
     * @param {string} command The command to wait for
     * @param {Function} callback The callback to use
     */
-    onCommand(command) {
+    onCommand(command, callback) {
         this.on("message", (data) => {
             let messageData = JSON.parse(data);
             try {
