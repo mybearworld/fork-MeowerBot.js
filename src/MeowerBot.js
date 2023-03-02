@@ -175,15 +175,17 @@ export default class Bot extends EventEmitter {
         this.on("message", (data) => {
             let messageData = JSON.parse(data);
             try {
-                if (messageData.val.u === this.username) {
-                    return;
-                } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
-                    if (messageData.val.p.split(": ")[1] == `${this.prefix}${command}`) {
-                        callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1].split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
-                    }
-                } else {
-                    if (messageData.val.p.split(": ")[1] == `${this.prefix}${command}`) {
-                        callback(messageData.val.u, messageData.val.p.split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                if (messageData.val.type === 1) {
+                    if (messageData.val.u === this.username) {
+                        return;
+                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
+                        if (messageData.val.p.split(": ")[1] == `${this.prefix}${command}`) {
+                            callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1].split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                        }
+                    } else {
+                        if (messageData.val.p.split(": ")[1] == `${this.prefix}${command}`) {
+                            callback(messageData.val.u, messageData.val.p.split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                        }
                     }
                 }
             } catch(e) {
