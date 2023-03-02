@@ -18,15 +18,44 @@ export default class Bot extends EventEmitter {
         this.ws = new WebSocket(server);
 
         this.ws.on("open", async () => {
-            this.ws.send(`{"cmd": "direct", "val": {"cmd": "type", "val": "js"}}`);
-            this.ws.send(`{"cmd": "direct", "val": {"cmd": "ip", "val": "${await fetch("https://api.meower.org/ip").then(res => res.text())}"}}`);
-            this.ws.send(`{"cmd": "direct", "val": "meower"}`);
-            this.ws.send(`{"cmd": "direct", "val": {"cmd": "version_chk", "val": "scratch-beta-5-r7"}}`);
-            this.ws.send(`{"cmd": "direct", "val": {"cmd": "authpswd", "val": {"username": "${username}", "pswd": "${password}"}}}`);
+            this.send({
+                "cmd": "direct",
+                "val": {
+                    "cmd": "type",
+                    "val": "js"
+                }
+            });
+
+            this.send({
+                "cmd": "direct",
+                "val": {
+                    "cmd": "ip",
+                    "val": await fetch("https://api.meower.org/ip").then(res => res.text())
+                }
+            });
+
+            this.send({
+                "cmd": "direct",
+                "val": "meower"
+            });
+
+            this.send({
+                "cmd": "direct",
+                "val": {
+                    "cmd": "authpswd",
+                    "val": {
+                        "username": username,
+                        "pswd": password
+                    }
+                }
+            });
             
             setInterval(() => {
                 if (this.ws.readyState == 1) {
-                    this.ws.send(`{"cmd": "ping", "val": ""}`);
+                    this.send({
+                        "cmd": "ping",
+                        "val": ""
+                    });
                 }
             }, 10000);
             
@@ -74,9 +103,24 @@ export default class Bot extends EventEmitter {
     */
     post(content, id=null) {
         if (id) {
-            this.ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_chat", "val": {"p": content, "chatid": id}}}));
+            this.send({
+                "cmd": "direct",
+                "val": {
+                    "cmd": "post_chat",
+                    "val": {
+                        "p": content,
+                        "chatid": id
+                    }
+                }
+            });
         } else {
-            this.ws.send(JSON.stringify({"cmd": "direct", "val": {"cmd": "post_home", "val": content}}));
+            this.send({
+                "cmd": "direct",
+                "val": {
+                    "cmd": "post_home",
+                    "val": content
+                }
+            });
         }
     }
 
@@ -127,7 +171,7 @@ export default class Bot extends EventEmitter {
     * @param {string} command The command to wait for
     * @param {Function} callback The callback to use
     */
-    onCommand(command, callback) {
+    onCommand(command) {
         this.on("message", (data) => {
             let messageData = JSON.parse(data);
             try {
@@ -150,7 +194,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Sends a message to the server
-    * @param {Object} message The message to send
+    * @param {object} message The message to send
     */
     send(message) {
         this.ws.send(JSON.stringify(message));
