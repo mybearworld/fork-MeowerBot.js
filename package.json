@@ -1,7 +1,7 @@
 {
   "name": "meowerbot",
   "version": "1.5.0",
-  "description": "Port of MeowerBot.py to Node.js",
+  "description": "Port of MeowerBot.py to Node.js and TypeScript",
   "main": "src/MeowerBot.js",
   "types": "src/MeowerBot.d.ts",
   "type": "module",
