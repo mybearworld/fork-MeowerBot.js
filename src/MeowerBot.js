@@ -99,7 +99,7 @@ export default class Bot extends EventEmitter {
     /**
     * Post to home, or a group chat, if specified
     * @param {string} content The post content
-    * @param {string} id The group chat ID to post to, leave as `null` to post to home
+    * @param {string} id The group chat ID to post to, leave empty to post to home
     */
     post(content, id=null) {
         if (id) {
