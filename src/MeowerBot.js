@@ -11,7 +11,6 @@ export default class Bot extends EventEmitter {
     * @param {string} prefix The bot's prefix, default is a `@` mention of the bot's username
     */
     login(username, password, server="wss://server.meower.org/", prefix=`@${username}`) {
-        super(username, password);
         this.username = username;
         this.password = password;
         this.prefix = prefix;
@@ -180,11 +179,24 @@ export default class Bot extends EventEmitter {
                         return;
                     } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
                         if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
-                            callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1].split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                            callback({
+                                user: messageData.val.p.split(": ")[0],
+                                args: messageData.val.p.split(": ")[1].split(" ").splice(0, 1),
+                                origin: (messageData.val.post_origin == "home" ? null : messageData.val.post_origin),
+                                reply: (content) => {
+                                    this.post(`@${this.user} ${origin}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                }
+                            });
                         }
                     } else {
                         if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
-                            callback(messageData.val.u, messageData.val.p.split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                            callback({
+                                user: messageData.val.u,
+                                args: messageData.val.p.split(" ").splice(0, 1),
+                                reply: (content) => {
+                                    this.post(`@${messageData.val.u} ${content}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                }
+                            });
                         }
                     }
                 }
