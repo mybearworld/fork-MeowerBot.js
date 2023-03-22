@@ -1,12 +1,12 @@
 {
   "name": "meowerbot",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Port of MeowerBot.py to Node.js and TypeScript",
   "main": "src/MeowerBot.js",
   "types": "src/MeowerBot.d.ts",
   "type": "module",
   "scripts": {
-      "test": "eslint ."
+    "test": "eslint ."
   },
   "repository": {
     "type": "git",
