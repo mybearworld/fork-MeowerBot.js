@@ -1,4 +1,4 @@
-import Bot from "../../src/MeowerBot.js";
+import Bot from "../src/MeowerBot.js";
 
 const bot = new Bot();
 
