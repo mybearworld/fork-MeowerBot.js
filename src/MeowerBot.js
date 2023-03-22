@@ -10,7 +10,7 @@ export default class Bot extends EventEmitter {
     * @param {string} server The server to connect to, default is `wss://server.meower.org/`
     * @param {string} prefix The bot's prefix, default is a `@` mention of the bot's username
     */
-    constructor(username, password, server="wss://server.meower.org/", prefix=`@${username} `) {
+    login(username, password, server="wss://server.meower.org/", prefix=`@${username}`) {
         super(username, password);
         this.username = username;
         this.password = password;
@@ -179,11 +179,11 @@ export default class Bot extends EventEmitter {
                     if (messageData.val.u === this.username) {
                         return;
                     } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
-                        if (messageData.val.p.startsWith(`${this.prefix}${command}`)) {
+                        if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
                             callback(messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1].split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         }
                     } else {
-                        if (messageData.val.p.startsWith(`${this.prefix}${command}`)) {
+                        if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
                             callback(messageData.val.u, messageData.val.p.split(" ").splice(0, 1), (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         }
                     }
