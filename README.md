@@ -1,6 +1,6 @@
 # MeowerBot.js
 Port of MeowerBot.py to Node.js and TypeScript
-## Installing
+## Installation
 ```bash
 npm install meowerbot
 ```
