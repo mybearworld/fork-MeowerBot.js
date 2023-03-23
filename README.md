@@ -8,14 +8,14 @@ npm install meowerbot
 ```js
 import Bot from "meowerbot";
 
-const bot = new Bot("username", "password"); // Init, then login to Meower
+const bot = new Bot(); 
 
 bot.onLogin(() => { // Runs when logged in
     bot.post("Hello from MeowerBot.js!");
 });
 
-bot.onCommand("help", (username, argv, origin) => { // Runs when a new post with a bot command is sent
-    bot.post("Commands: @username help", origin);
+bot.onCommand("help", (ctx) => { // Runs when a new post with a bot command is sent
+    ctx.reply("Commands: @username help");
 });
 
 bot.onMessage((data) => { // Runs when the server sends a new message
@@ -24,5 +24,8 @@ bot.onMessage((data) => { // Runs when the server sends a new message
 
 bot.onClose(() => { // Runs when the bot gets disconnected
     console.log("Disconnected");
+    bot.login("username", "password");
 });
+
+bot.login("username", "password"); // Init, then login to Meower
 ```
