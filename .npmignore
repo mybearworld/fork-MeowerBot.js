@@ -4,3 +4,6 @@ replit.nix
 
 # GitHub folder
 .github/
+
+# ESLint files
+.eslintrc.json
