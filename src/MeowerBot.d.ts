@@ -9,4 +9,8 @@ declare class Bot {
     send(message: object): void;
 }
 
-export = Bot;
+declare class API {
+    getHome(page?: number): Promise<object[]>;
+}
+
+export = { Bot, API };

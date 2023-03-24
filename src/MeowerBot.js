@@ -9,6 +9,7 @@ export default class Bot extends EventEmitter {
     * @param {string} password The bot's password
     * @param {string} server The server to connect to, default is `wss://server.meower.org/`
     * @param {string} prefix The bot's prefix, default is a `@` mention of the bot's username
+    * @returns {void}
     */
     login(username, password, server="wss://server.meower.org/", prefix=`@${username}`) {
         this.username = username;
@@ -99,6 +100,7 @@ export default class Bot extends EventEmitter {
     * Post to home, or a group chat, if specified
     * @param {string} content The post content
     * @param {string} id The group chat ID to post to, leave empty to post to home
+    * @returns {void}
     */
     post(content, id=null) {
         if (id) {
@@ -126,6 +128,7 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when a new post is sent
     * @param {Function} callback The callback to use
+    * @returns {void}
     */
     onPost(callback) {
         this.on("post", (username, content, origin) => {
@@ -136,6 +139,7 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when the connection is closed
     * @param {Function} callback The callback to use
+    * @returns {void}
     */
     onClose(callback) {
         this.on("close", () => {
@@ -147,6 +151,7 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when a new message from the server is sent
     * @param {Function} callback The callback to use
+    * @returns {void}
     */
     onMessage(callback) {
         this.on("message", (data) => {
@@ -158,6 +163,7 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when successfully logged in
     * @param {Function} callback The callback to use
+    * @returns {void}
     */
     onLogin(callback) {
         this.on("login", () => {
@@ -215,8 +221,23 @@ export default class Bot extends EventEmitter {
     /**
     * Sends a message to the server
     * @param {object} message The message to send
+    * @returns {void}
     */
     send(message) {
         this.ws.send(JSON.stringify(message));
+    }
+}
+
+export class API {
+    /**
+    * Gets the specified page in home
+    * @param {number} page The page to get
+    * @returns {Promise<object[]>}
+    */
+    async getHome(page=1) {
+        const home = await fetch(`https://api.meower.org/home?autoget&page=${page}`).then(res => res.json()).catch(e => {
+            throw e;
+        });
+        return home.autoget;
     }
 }
