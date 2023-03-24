@@ -185,6 +185,9 @@ export default class Bot extends EventEmitter {
                                 origin: (messageData.val.post_origin == "home" ? null : messageData.val.post_origin),
                                 reply: (content) => {
                                     this.post(`@${this.user} ${origin}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                },
+                                post: (content) => {
+                                    this.post(content, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                                 }
                             });
                         }
@@ -195,6 +198,9 @@ export default class Bot extends EventEmitter {
                                 args: messageData.val.p.split(" ").splice(0, 1),
                                 reply: (content) => {
                                     this.post(`@${messageData.val.u} ${content}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                },
+                                post: (content) => {
+                                    this.post(content, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                                 }
                             });
                         }
