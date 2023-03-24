@@ -11,6 +11,7 @@ declare class Bot {
 
 declare class API {
     getHome(page?: number): Promise<object[]>;
+    getUser(user: string): Promise<object>;
 }
 
 export = { Bot, API };
