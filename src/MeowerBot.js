@@ -77,7 +77,7 @@ export default class Bot extends EventEmitter {
                     try {
                         if (messageData.val.u === this.username) {
                             return;
-                        } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
+                        } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
                             this.emit("post", messageData.val.p.split(": ")[0], messageData.val.p.split(": ")[1], (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                         } else {
                             this.emit("post", messageData.val.u, messageData.val.p, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
@@ -183,7 +183,7 @@ export default class Bot extends EventEmitter {
                 if (messageData.val.type === 1) {
                     if (messageData.val.u === this.username) {
                         return;
-                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt") {
+                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "revolt") {
                         if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
                             callback({
                                 user: messageData.val.p.split(": ")[0],
