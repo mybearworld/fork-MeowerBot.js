@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import fetch from "node-fetch";
-import EventEmitter from "events";
+import EventEmitter from "node:events";
 
 export default class Bot extends EventEmitter {
     /**
@@ -232,7 +232,9 @@ export default class Bot extends EventEmitter {
     * @returns {void}
     */
     close() {
-        this.ws.close();
+        this.off("close", () => {
+            this.ws.close();
+        });
     }
 }
 
