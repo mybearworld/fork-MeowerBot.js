@@ -2,11 +2,11 @@
   "name": "@meower-community/meower",
   "version": "1.7.0",
   "description": "Port of meower.py to Node.js and TypeScript",
-  "main": "src/MeowerBot.js",
-  "types": "src/MeowerBot.d.ts",
+  "main": "src/meower.js",
+  "types": "src/meower.d.ts",
   "type": "module",
   "scripts": {
-    "test": "eslint ."
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
