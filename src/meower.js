@@ -237,36 +237,3 @@ export default class Bot extends EventEmitter {
         });
     }
 }
-
-export class API {
-    /**
-    * @param {string} url The URL of the API to use
-    */
-    constructor(url="https://api.meower.org/") {
-        this.url = url;
-    }
-
-    /**
-    * Gets the specified page in home
-    * @param {number} page The page to get
-    * @returns {Promise<object[]>}
-    */
-    async getHome(page=1) {
-        const home = await fetch(`${this.url}home?autoget&page=${page}`).then(res => res.json()).catch(e => {
-            throw e;
-        });
-        return home.autoget;
-    }
-
-    /**
-    * Gets the specified user
-    * @param {string} user The page to get
-    * @returns {Promise<object>}
-    */
-    async getUser(user) {
-        const user_obj = await fetch(`${this.url}users/${user}`).then(res => res.json()).catch(e => {
-            throw e;
-        });
-        return user_obj;
-    }
-}
