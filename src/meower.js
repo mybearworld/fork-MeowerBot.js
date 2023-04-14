@@ -183,7 +183,7 @@ export default class Bot extends EventEmitter {
                 if (messageData.val.type === 1) {
                     if (messageData.val.u === this.username) {
                         return;
-                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
+                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
                         if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
                             callback({
                                 user: messageData.val.p.split(": ")[0],
