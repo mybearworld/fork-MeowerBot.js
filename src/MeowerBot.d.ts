@@ -7,7 +7,6 @@ declare class Bot {
     onLogin(callback: Function): void;
     onCommand(command: string, callback: Function): void;
     send(message: object): void;
-    close(): void;
 }
 
 declare class API {
