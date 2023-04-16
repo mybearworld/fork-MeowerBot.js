@@ -11,7 +11,7 @@ import Bot from "@meower-community/meower";
 const bot = new Bot(); 
 
 bot.onLogin(() => { // Runs when logged in
-    bot.post("Hello from MeowerBot.js!");
+    bot.post("Hello from meower.js!");
 });
 
 bot.onCommand("help", (ctx) => { // Runs when a new post with a bot command is sent
