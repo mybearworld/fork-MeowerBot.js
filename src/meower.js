@@ -220,7 +220,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Sends a message to the server
-    * @param {{ cmd: string; val: any;}} message The message to send
+    * @param {{ cmd: string; val: any; }} message The message to send
     * @returns {void}
     */
     send(message) {
