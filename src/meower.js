@@ -127,7 +127,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Executes the callback when a new post is sent
-    * @param {Function} callback The callback to use
+    * @param {() => void} callback The callback to use
     * @returns {void}
     */
     onPost(callback) {
@@ -138,7 +138,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Executes the callback when the connection is closed
-    * @param {Function} callback The callback to use
+    * @param {() => void} callback The callback to use
     * @returns {void}
     */
     onClose(callback) {
@@ -150,7 +150,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Executes the callback when a new message from the server is sent
-    * @param {Function} callback The callback to use
+    * @param {() => void} callback The callback to use
     * @returns {void}
     */
     onMessage(callback) {
@@ -184,7 +184,7 @@ export default class Bot extends EventEmitter {
                     if (messageData.val.u === this.username) {
                         return;
                     } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
-                        if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
+                        if (messageData.val.p.startsWith(`${this.prefix} ${command}`) || messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
                             callback({
                                 user: messageData.val.p.split(": ")[0],
                                 args: messageData.val.p.split(": ")[1].split(" ").splice(0, 1),
@@ -220,7 +220,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Sends a message to the server
-    * @param {object} message The message to send
+    * @param {{ cmd: string; val: any;}} message The message to send
     * @returns {void}
     */
     send(message) {
