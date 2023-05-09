@@ -1,6 +1,6 @@
 {
   "name": "@meower-community/meower",
-  "version": "2023.xx.xx",
+  "version": "2023.05.09",
   "description": "Port of meower.py to Node.js and TypeScript",
   "main": "src/meower.js",
   "types": "src/meower.d.ts",
