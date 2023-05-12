@@ -1,12 +1,12 @@
-# meower.js
+# MeowerBot.js
 Port of meower.py to Node.js and TypeScript
 ## Installation
 ```bash
-npm install @meower-community/meower
+npm install meowerbot
 ```
 ## Example Bot
 ```js
-import Bot from "@meower-community/meower";
+import Bot from "meowerbot";
 
 const bot = new Bot(); 
 

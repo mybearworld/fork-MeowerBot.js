@@ -7,3 +7,6 @@ replit.nix
 
 # ESLint files
 .eslintrc.json
+
+# Documentation folder
+docs/

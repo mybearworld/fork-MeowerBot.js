@@ -1,9 +1,9 @@
 {
-  "name": "@meower-community/meower",
-  "version": "2023.05.09",
+  "name": "meowerbot",
+  "version": "2023.05.12",
   "description": "Port of meower.py to Node.js and TypeScript",
-  "main": "src/meower.js",
-  "types": "src/meower.d.ts",
+  "main": "src/MeowerBot.js",
+  "types": "src/MeowerBot.d.ts",
   "type": "module",
   "scripts": {
     "lint": "eslint ."
