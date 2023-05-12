@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import fetch from "node-fetch";
-import EventEmitter from "events";
+import EventEmitter from "node:events";
 
 export default class Bot extends EventEmitter {
     /**
@@ -127,7 +127,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Executes the callback when a new post is sent
-    * @param {Function} callback The callback to use
+    * @param {() => void} callback The callback to use
     * @returns {void}
     */
     onPost(callback) {
@@ -138,7 +138,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Executes the callback when the connection is closed
-    * @param {Function} callback The callback to use
+    * @param {() => void} callback The callback to use
     * @returns {void}
     */
     onClose(callback) {
@@ -150,7 +150,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Executes the callback when a new message from the server is sent
-    * @param {Function} callback The callback to use
+    * @param {() => void} callback The callback to use
     * @returns {void}
     */
     onMessage(callback) {
@@ -174,7 +174,7 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when a bot command is sent
     * @param {string} command The command to wait for
-    * @param {Function} callback The callback to use
+    * @param {(ctx: user: string; args: string[]; origin: string; reply: (content: string) => void; post: (content: string) => void;) => void} callback The callback to use
     */
     onCommand(command, callback) {
         this.on("message", (data) => {
@@ -183,14 +183,14 @@ export default class Bot extends EventEmitter {
                 if (messageData.val.type === 1) {
                     if (messageData.val.u === this.username) {
                         return;
-                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
-                        if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
+                    } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
+                        if (messageData.val.p.startsWith(`${this.prefix} ${command}`) || messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
                             callback({
                                 user: messageData.val.p.split(": ")[0],
                                 args: messageData.val.p.split(": ")[1].split(" ").splice(0, 1),
                                 origin: (messageData.val.post_origin == "home" ? null : messageData.val.post_origin),
                                 reply: (content) => {
-                                    this.post(`@${this.user} ${origin}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                    this.post(`@${this.user} ${content}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
                                 },
                                 post: (content) => {
                                     this.post(content, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
@@ -220,7 +220,7 @@ export default class Bot extends EventEmitter {
 
     /**
     * Sends a message to the server
-    * @param {object} message The message to send
+    * @param {{ cmd: string; val: any; }} message The message to send
     * @returns {void}
     */
     send(message) {
@@ -232,39 +232,8 @@ export default class Bot extends EventEmitter {
     * @returns {void}
     */
     close() {
-        this.ws.close();
-    }
-}
-
-export class API {
-    /**
-    * @param {string} url The URL of the API to use
-    */
-    constructor(url="https://api.meower.org/") {
-        this.url = url;
-    }
-
-    /**
-    * Gets the specified page in home
-    * @param {number} page The page to get
-    * @returns {Promise<object[]>}
-    */
-    async getHome(page=1) {
-        const home = await fetch(`${this.url}home?autoget&page=${page}`).then(res => res.json()).catch(e => {
-            throw e;
+        this.off("close", () => {
+            this.ws.close();
         });
-        return home.autoget;
-    }
-
-    /**
-    * Gets the specified user
-    * @param {string} user The page to get
-    * @returns {Promise<object>}
-    */
-    async getUser(user) {
-        const user_obj = await fetch(`${this.url}users/${user}`).then(res => res.json()).catch(e => {
-            throw e;
-        });
-        return user_obj;
     }
 }
