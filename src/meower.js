@@ -174,7 +174,7 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when a bot command is sent
     * @param {string} command The command to wait for
-    * @param {Function} callback The callback to use
+    * @param {(ctx: user: string; args: string[]; origin: string; reply: (content: string) => void; post: (content: string) => void;) => void} callback The callback to use
     */
     onCommand(command, callback) {
         this.on("message", (data) => {

@@ -4,11 +4,7 @@ export interface Message {
 }
 
 export interface Context {
-    user: string;
-    args: string[];
-    origin: string;
-    reply: (content: string) => void;
-    post: (content: string) => void;
+    The evolution of the word "Hi" on Meower: 2020: Hi, 2022: h, 2023: @wlbot work
 }
 
 declare class Bot {
