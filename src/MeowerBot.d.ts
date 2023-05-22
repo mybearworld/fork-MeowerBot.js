@@ -18,6 +18,7 @@ declare class Bot {
     onCommand(command: string, callback: (ctx: Context) => void): void;
     send(message: Message): void;
     close(): void;
+    onCommandMiddleware(callback: (ctx: any) => boolean): void;
 }
 
 export = Bot;

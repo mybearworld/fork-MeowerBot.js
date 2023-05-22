@@ -15,6 +15,7 @@ export default class Bot extends EventEmitter {
         this.username = username;
         this.password = password;
         this.prefix = prefix;
+        this.middleware = (ctx) => { return true; };
         this.ws = new WebSocket(server);
 
         this.ws.on("open", async () => {
@@ -185,6 +186,22 @@ export default class Bot extends EventEmitter {
                         return;
                     } else if (messageData.val.u == "Discord" || messageData.val.u == "Revower" || messageData.val.u == "revolt" || messageData.val.u == "irc2meower") {
                         if (messageData.val.p.startsWith(`${this.prefix} ${command}`) || messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
+                            let middleware_response = this.middleware({
+                                user: messageData.val.p.split(": ")[0],
+                                args: messageData.val.p.split(": ")[1].split(" ").splice(0, 1),
+                                origin: (messageData.val.post_origin == "home" ? null : messageData.val.post_origin),
+                                reply: (content) => {
+                                    this.post(`@${this.user} ${content}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                },
+                                post: (content) => {
+                                    this.post(content, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                }
+                            });
+                            
+                            if (!middleware_response) {
+                                return;
+                            }
+
                             callback({
                                 user: messageData.val.p.split(": ")[0],
                                 args: messageData.val.p.split(": ")[1].split(" ").splice(0, 1),
@@ -199,6 +216,21 @@ export default class Bot extends EventEmitter {
                         }
                     } else {
                         if (messageData.val.p.startsWith(`${this.prefix} ${command}`)) {
+                            let middleware_response = this.middleware({
+                                user: messageData.val.u,
+                                args: messageData.val.p.split(" ").splice(0, 1),
+                                reply: (content) => {
+                                    this.post(`@${messageData.val.u} ${content}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                },
+                                post: (content) => {
+                                    this.post(content, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
+                                }
+                            });
+                            
+                            if (!middleware_response) {
+                                return;
+                            }
+
                             callback({
                                 user: messageData.val.u,
                                 args: messageData.val.p.split(" ").splice(0, 1),
@@ -235,5 +267,14 @@ export default class Bot extends EventEmitter {
         this.off("close", () => {
             this.ws.close();
         });
+    }
+
+    /**
+    * The middleware to use for `onCommand`
+    * @param {(ctx: any) => boolean} callback The callback to use
+    * @returns {void}
+    */
+    onCommandMiddleware(callback) {
+        this.middleware = callback;
     }
 }
