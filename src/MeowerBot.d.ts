@@ -2,11 +2,8 @@ export interface Message {
     cmd: string;
     val: any;
 }
-/* Nice going! You broke it.
-export interface Context {
-    The evolution of the word "Hi" on Meower: 2020: Hi, 2022: h, 2023: @wlbot work
-}
-*/
+
+// export interface Context {}
 
 declare class Bot {
     login(username: string, password: string, server?: string, prefix?: string);
