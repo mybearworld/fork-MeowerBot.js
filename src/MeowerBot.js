@@ -87,11 +87,14 @@ export default class Bot extends EventEmitter {
                         console.error(e);
                     }
                 } else if (messageData.cmd === "pmsg") {
+                    /*
                     this.send({
                         "cmd": "pmsg",
                         "val": "I: 100 | Bot",
                         "id": messageData.origin
                     });
+                    */
+                   return;
                 }
             });
         });
