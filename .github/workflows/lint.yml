@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: npm install
+        run: pnpm install
       - name: Run ESLint
-        run: npm run lint
+        run: pnpm lint
