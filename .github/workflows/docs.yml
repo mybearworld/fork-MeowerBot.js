@@ -1,4 +1,4 @@
-name: Lint
+name: Generate docs
 
 on:
   push:
@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
-        run: pnpm install
-      - name: Run ESLint
-        run: pnpm lint
+        run: pnpm add -g jsdoc
+      - name: Generate docs
+        run: jsdoc -R README.md -d docs src/MeowerBot.js
