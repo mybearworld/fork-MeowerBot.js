@@ -24,4 +24,4 @@ declare class Bot {
     onCommandMiddleware(callback: (ctx: Context) => boolean): void;
 }
 
-export = Bot;
+export default Bot;
