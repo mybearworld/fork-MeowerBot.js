@@ -207,7 +207,7 @@ export default class Bot extends EventEmitter {
 
                             callback({
                                 user: messageData.val.p.split(": ")[0],
-                                args: messageData.val.p.split(": ")[1].split(" ").splice(0, 1),
+                                args: messageData.val.p.split(": ")[1].split(" ").splice(2),
                                 origin: (messageData.val.post_origin == "home" ? null : messageData.val.post_origin),
                                 reply: (content) => {
                                     this.post(`@${this.user} ${content}`, (messageData.val.post_origin == "home" ? null : messageData.val.post_origin));
