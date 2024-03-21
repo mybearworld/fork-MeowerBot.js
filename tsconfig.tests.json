@@ -1,0 +1,17 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "outDir": "./tests/dist/",
+        "target": "ES2022",
+        "module": "ES2022",     
+        "paths": {
+            "@dist/*": ["./tests/dist/*"],
+            "@dist/MeowerBot": ["./tests/dist/MeowerBot"]
+        },
+        "sourceRoot": "./tests"
+    },
+    "include": [
+        "./tests/**/*"
+    ]           
+    
+}

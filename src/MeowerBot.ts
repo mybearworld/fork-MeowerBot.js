@@ -1,10 +1,13 @@
 import WebSocket from "ws";
-import fetch from "node-fetch";
 import EventEmitter from "node:events";
 
+process.on('unhandledrejection', (event) => {
+    throw new Error(event.reason)
+})
+  // …Log the error to the server…
 export interface Packet extends Object {
     cmd: string;
-    val: any;
+    val: any | Object;
     listener?: string;
 }
 
@@ -13,8 +16,8 @@ export interface Context extends Object {
     user: string;
     args: string[];
     origin: string;
-    reply: (content: string) => void;
-    post: (content: string) => void;
+    reply: (content: string) => Promise<void>;
+    post: (content: string) => Promise<void>;
 }
 
 interface User extends Object {
@@ -56,14 +59,18 @@ interface User extends Object {
     "username": string,
 }
 
-let bridges = ["Discord"]
+export let bridges = ["Discord"]
 
 export default class Bot extends EventEmitter {
-    middleware!: ((ctx: Context) => boolean);
+    middleware!: ((ctx: Context) => boolean | Promise<boolean>);
     prefix!: string;
     api!: string;
     ws!: WebSocket;
     user!: User;
+
+    constructor() {
+        super();
+    };
 
     /**
     * Connects to the (specified) server, then logs in
@@ -111,7 +118,8 @@ export default class Bot extends EventEmitter {
             }, 10000);
 
             this.on('listener-mb.js-login', (packet: Packet) => {
-                if (packet.val.mode === undefined && packet.val !== "I: 100 | OK") {
+                if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
+                    console.error(`[MeowerBot] Failed to login: ${packet.val}`)
                     throw new Error(`Failed to login: ${packet.val}`)
                 } else if (packet.val.mode === undefined) return;
 
@@ -124,20 +132,26 @@ export default class Bot extends EventEmitter {
                 this.emit("close");
             });
 
-            this.ws.on("packet", (data: Packet) => {
+            this.ws.on("packet", (data: string) => {
                 this.emit("packet", data);
             });
 
             this.on('command-direct', (command: Packet) => {
+                command = JSON.parse(JSON.stringify(command))
                 if (!command.val.hasOwnProperty("type")) {
                     return;
                 }
 
                 command.val.bridged = false;
                 if (bridges.includes(command.val.u)) {
-                    const data: Array<string> = command.val.p.split(": ", 1);
+                    const data: Array<string> = (command.val.p as string).split(":");
+                    
+                    if (command.val.u === 'Webhooks') {
+                        data.splice(0, 1);
+                    }
+
                     command.val.u = data[0];
-                    command.val.p = data[1];
+                    command.val.p = data[1]?.trimStart().concat(data.slice(2, data.length).join(":"));
                     command.val.bridged = true;
                 }
 
@@ -149,12 +163,22 @@ export default class Bot extends EventEmitter {
                 );
             })
 
-            this.ws.on("packet", (data: string) => {
+            this.ws.on("message", (data: string) => {
                 let packetData: Packet = JSON.parse(data);
-                if (packetData.listener !== undefined) {
-                    this.emit(`listener-${packetData.listener}`)
+                if (packetData.listener !== "mb.js-login") {
+                    console.debug(`> ${data}`)
                 }
-                this.emit(`command-${packetData.cmd}`, packetData)
+                try {
+                    if (packetData.listener !== undefined) {
+                        this.emit(`listener-${packetData.listener}`, packetData)
+                    }
+
+                    this.emit(`command-${packetData.cmd}`, packetData)
+                } catch (e) {
+                    console.error(e);
+                    this.emit('.error', e);
+                    
+                }
             });
         });
     }
@@ -184,6 +208,11 @@ export default class Bot extends EventEmitter {
             })
         });
 
+        if (!response.ok) {
+            console.error(`[MeowerBot] Failed to send post: ${await response.text()} @ ${response.status}`)
+            return null;
+        }
+
         return await response.json();
     }
 
@@ -191,18 +220,18 @@ export default class Bot extends EventEmitter {
     * Executes the callback when a new post is sent
 
     */
-    onPost(callback: (username: string, content: string, origin: string) => void) {
-        this.on("post", (username: string, content: string, origin: string) => {
-            callback(username, content, origin);
+    onPost(callback: (username: string, content: string, origin: string) => void | Promise<void>) {
+        this.on("post", async (username: string, content: string, origin: string) => {
+            await callback(username, content, origin);
         });
     }
 
     /**
     * Executes the callback when the connection is closed
     */
-    onClose(callback: () => void) {
-        this.on("close", () => {
-            callback();
+    onClose(callback: () => void | Promise<void>) {
+        this.on("close", async () => {
+            await callback();
         });
     }
 
@@ -210,9 +239,9 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when a new packet from the server is sent
     */
-    onPacket(callback: (data: Packet) => void) {
-        this.on("packet", (data: Packet) => {
-            callback(data);
+    onPacket(callback: (data: Packet) => void | Promise<void>) {
+        this.on("packet", async (data: Packet) => {
+            await callback(data);
         });
     }
 
@@ -220,48 +249,58 @@ export default class Bot extends EventEmitter {
     /**
     * Executes the callback when successfully logged in
     */
-    onLogin(callback: () => void) {
-        this.on("login", () => {
-            callback();
+    onLogin(callback: () => void | Promise<void>) {
+        this.on("login", async () => {
+            await callback();
         });
     }
 
     /**
     * Executes the callback when a bot command is sent
     */
-    onCommand(command: string, callback: (ctx: Context) => void) {
-        this.onPost((username: string, content: string, origin: string) => {
+    onCommand(command: string, callback: (ctx: Context) => void | Promise<void>) {
+        this.onPost( async (username: string, content: string, origin: string) => {
             if (username === this.user.username) {
                 return;
             }
             const ctx: Context = {
                 _bot: this,
                 user: username,
-                args: content.split(" ").splice(0, 1),
+                args: content.split(" ", 5000),
                 origin: origin,
-                reply: function (content: string): void {
-                    this._bot.post(`@${this.user} ${content}`, this.origin)
+                reply: async function (content: string): Promise<void> {
+                    return await this._bot.post(`@${this.user} ${content}`, this.origin)
                 },
-                post: function (content: string): void {
-                    this._bot.post(content, this.origin)
+                post: async function (content: string): Promise<void> {
+                    return await this._bot.post(content, this.origin)
                 }
             }
+
+            ctx.args.splice(0, 2)
           
                     
             if (!content.startsWith(`${this.prefix} ${command}`) && !content.startsWith(`${this.prefix} ${command}`)) 
                 return;
 
-
-            if (!this.middleware(ctx)) return;
+            try {
+                if (!await this.middleware(ctx)) return;
             
-            callback(ctx);
+                await callback(ctx);
+            } catch (e: any) {
+                e.ctx = ctx;
+                this.emit('.error', e);
+                console.error(e);
+            }
         });
     };
     
     /**
     * Sends a packet to the server
     */
-    send(packet: Packet) {
+    async send(packet: Packet) {
+        if (packet.listener !== "mb.js-login") {
+            console.debug(`< ${JSON.stringify(packet)}`)
+        }
         this.ws.send(JSON.stringify(packet));
     }
 
@@ -276,7 +315,7 @@ export default class Bot extends EventEmitter {
     /**
     * The middleware to use for `onCommand`
     */
-    onCommandMiddleware(callback: (ctx: Context) => boolean) {
+    onCommandMiddleware(callback: (ctx: Context) => boolean | Promise<boolean>) {
         this.middleware = callback;
     }
 };
