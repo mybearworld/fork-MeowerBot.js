@@ -5,6 +5,7 @@
   "main": "src/MeowerBot.ts",
   "type": "module",
   "scripts": {
+    "install": "npm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",
