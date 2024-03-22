@@ -1,8 +1,11 @@
-import Bot, { Context, bridges } from '../dist/MeowerBot.js'
+import Bot, { Context } from '../dist/ext/bot/index.js'
+import help from "../dist/ext/bot/help.js"
+import { bridges } from '../dist/meower.js';
+import Eval from "../dist/ext/bot/eval_.js"
+
 import * as util from 'util';
 
-
-const bot = new Bot();
+const bot = Eval(help(new Bot()), ["ShowierData9978"]);
 
 bridges.push("Webhooks")
 
@@ -12,7 +15,7 @@ bot.onLogin(async () => {
 
 bot.onCommand('ping', async (ctx: Context) => {
     await ctx.reply("Pong!")
-})
+}, '', [])
 
 bot.onCommand('whoami', async (ctx: Context) => {
 
@@ -36,11 +39,11 @@ bot: ${(await fetch(`https://meower-utils.showierdata.xyz/bot/${data.user}`)).ok
     `)
 
     await ctx.post(message)
-})
+}, '', [])
 
 bot.onCommand('throw', async (ctx: Context) => {
     throw new Error(ctx.args.join(" "))
-})
+}, 'Throws an error,\n then returns it.', ["message: String"])
 
 // @ts-ignore
 bot.on('.error', async (error: Error | any) => {
@@ -64,5 +67,7 @@ bot.onPost(async (username, content, origin) => {
 if (!process.env.USERNAME || !process.env.PASSWORD) {
     throw TypeError("USERNAME or PASSWORD are not defined!")
 }
+
+
 
 bot.login(process.env.USERNAME, process.env.PASSWORD);

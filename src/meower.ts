@@ -4,21 +4,14 @@ import EventEmitter from "node:events";
 process.on('unhandledrejection', (event) => {
     throw new Error(event.reason)
 })
-  // …Log the error to the server…
+
 export interface Packet extends Object {
     cmd: string;
     val: any | Object;
     listener?: string;
 }
 
-export interface Context extends Object {
-    _bot: Bot
-    user: string;
-    args: string[];
-    origin: string;
-    reply: (content: string) => Promise<void>;
-    post: (content: string) => Promise<void>;
-}
+
 
 interface User extends Object {
     "account": {
@@ -61,9 +54,7 @@ interface User extends Object {
 
 export let bridges = ["Discord"]
 
-export default class Bot extends EventEmitter {
-    middleware!: ((ctx: Context) => boolean | Promise<boolean>);
-    prefix!: string;
+export default class Client extends EventEmitter {
     api!: string;
     ws!: WebSocket;
     user!: User;
@@ -75,11 +66,8 @@ export default class Bot extends EventEmitter {
     /**
     * Connects to the (specified) server, then logs in
     */
-    login(username: string, password: string, server = "wss://server.meower.org/", api = "https://api.meower.org", prefix = `@${username}`) {
-        this.prefix = prefix;
+    login(username: string, password: string, server = "wss://server.meower.org/", api = "https://api.meower.org") {
         this.api = api;
-
-        this.middleware = (ctx) => { return true; };
         this.ws = new WebSocket(server);
 
         this.ws.on("open", async () => {
@@ -89,11 +77,6 @@ export default class Bot extends EventEmitter {
                     "cmd": "type",
                     "val": "js"
                 }
-            });
-
-            this.send({
-                "cmd": "direct",
-                "val": "meower"
             });
 
             this.send({
@@ -119,7 +102,7 @@ export default class Bot extends EventEmitter {
 
             this.on('listener-mb.js-login', (packet: Packet) => {
                 if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
-                    console.error(`[MeowerBot] Failed to login: ${packet.val}`)
+                    console.error(`[Meower] Failed to login: ${packet.val}`)
                     throw new Error(`Failed to login: ${packet.val}`)
                 } else if (packet.val.mode === undefined) return;
 
@@ -142,8 +125,9 @@ export default class Bot extends EventEmitter {
                     return;
                 }
 
-                command.val.bridged = false;
+                command.val.bridged = null;
                 if (bridges.includes(command.val.u)) {
+                    command.val.bridged = JSON.parse(JSON.stringify(command));
                     const data: Array<string> = (command.val.p as string).split(":");
                     
                     if (command.val.u === 'Webhooks') {
@@ -159,7 +143,8 @@ export default class Bot extends EventEmitter {
                 this.emit("post",
                     command.val.u,
                     command.val.p,
-                    command.val.post_origin
+                    command.val.post_origin,
+                    {bridged: command.val.bridged}
                 );
             })
 
@@ -209,7 +194,7 @@ export default class Bot extends EventEmitter {
         });
 
         if (!response.ok) {
-            console.error(`[MeowerBot] Failed to send post: ${await response.text()} @ ${response.status}`)
+            console.error(`[Meower] Failed to send post: ${await response.text()} @ ${response.status}`)
             return null;
         }
 
@@ -220,9 +205,9 @@ export default class Bot extends EventEmitter {
     * Executes the callback when a new post is sent
 
     */
-    onPost(callback: (username: string, content: string, origin: string) => void | Promise<void>) {
-        this.on("post", async (username: string, content: string, origin: string) => {
-            await callback(username, content, origin);
+    onPost(callback: (username: string, content: string, origin: string, {bridged}: {bridged: boolean}) => void | Promise<void>) {
+        this.on("post", async (username: string, content: string, origin: string, bridged: {bridged: boolean}) => {
+            await callback(username, content, origin, bridged);
         });
     }
 
@@ -255,44 +240,6 @@ export default class Bot extends EventEmitter {
         });
     }
 
-    /**
-    * Executes the callback when a bot command is sent
-    */
-    onCommand(command: string, callback: (ctx: Context) => void | Promise<void>) {
-        this.onPost( async (username: string, content: string, origin: string) => {
-            if (username === this.user.username) {
-                return;
-            }
-            const ctx: Context = {
-                _bot: this,
-                user: username,
-                args: content.split(" ", 5000),
-                origin: origin,
-                reply: async function (content: string): Promise<void> {
-                    return await this._bot.post(`@${this.user} ${content}`, this.origin)
-                },
-                post: async function (content: string): Promise<void> {
-                    return await this._bot.post(content, this.origin)
-                }
-            }
-
-            ctx.args.splice(0, 2)
-          
-                    
-            if (!content.startsWith(`${this.prefix} ${command}`) && !content.startsWith(`${this.prefix} ${command}`)) 
-                return;
-
-            try {
-                if (!await this.middleware(ctx)) return;
-            
-                await callback(ctx);
-            } catch (e: any) {
-                e.ctx = ctx;
-                this.emit('.error', e);
-                console.error(e);
-            }
-        });
-    };
     
     /**
     * Sends a packet to the server
@@ -312,10 +259,5 @@ export default class Bot extends EventEmitter {
             this.ws.close();
         });
     }
-    /**
-    * The middleware to use for `onCommand`
-    */
-    onCommandMiddleware(callback: (ctx: Context) => boolean | Promise<boolean>) {
-        this.middleware = callback;
-    }
+
 };

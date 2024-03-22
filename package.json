@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",
-    "build:tests": "tsc && tsc -p tsconfig.tests.json && cp ./dist/* ./tests/dist/"
+    "build:tests": "tsc && cp -r ./dist/ ./tests/ && tsc -p tsconfig.tests.json "
   },
   "repository": {
     "type": "git",
