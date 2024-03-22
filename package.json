@@ -1,29 +1,33 @@
 {
   "name": "meowerbot",
-  "version": "2023.05.22",
-  "description": "Port of MeowerBot.py to Node.js and TypeScript",
-  "main": "src/MeowerBot.js",
-  "types": "src/MeowerBot.d.ts",
+  "version": "2.0.0-alpha1",
+  "description": "Port of MeowerBot.py to TypeScript",
+  "main": "dist/MeowerBot.js",
   "type": "module",
   "scripts": {
+    "prepare": "npm run build",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "build": "tsc",
+    "build:tests": "tsc && cp -r ./dist/ ./tests/ && tsc -p tsconfig.tests.json "
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/meower-community/MeowerBot.js.git"
   },
-  "author": "M.D. Walters",
+  "author": "ShowierData9978",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/meower-community/MeowerBot.js/issues"
   },
   "homepage": "https://github.com/meower-community/MeowerBot.js#readme",
   "dependencies": {
-    "node-fetch": "^3.3.2",
+    "typescript": "^5.4.3",
     "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/ws": "^8.5.10",
     "eslint": "^8.56.0"
   }
 }

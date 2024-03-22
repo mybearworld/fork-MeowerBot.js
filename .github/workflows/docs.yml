@@ -14,4 +14,4 @@ jobs:
       - name: Install dependencies
         run: npm install -g jsdoc
       - name: Generate docs
-        run: jsdoc -R README.md -d docs src/MeowerBot.js
+        run: jsdoc -R README.md -d docs src/MeowerBot.ts
