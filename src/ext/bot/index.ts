@@ -1,4 +1,5 @@
 import Client from "../..";
+import { Post } from "../../api";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface Context extends Object {
@@ -8,8 +9,8 @@ export interface Context extends Object {
     user: string;
     args: string[];
     origin: string;
-    reply: (content: string) => Promise<void>;
-    post: (content: string) => Promise<void>;
+    reply: (content: string) => Promise<Post | null> ;
+    post: (content: string) => Promise<Post | null> ;
 }
 
 export default class Bot extends Client {
@@ -56,10 +57,10 @@ export default class Bot extends Client {
                 bridged: bridged !== null,
                 args: content.split(" ", 5000),
                 origin: origin,
-                reply: async function (content: string): Promise<void> {
+                reply: async function (content: string): Promise<Post | null> {
                     return await this._bot.post(`@${this.user} ${content}`, this.origin)
                 },
-                post: async function (content: string): Promise<void> {
+                post: async function (content: string): Promise<Post | null> {
                     return await this._bot.post(content, this.origin)
                 }
             }
