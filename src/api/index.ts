@@ -11,8 +11,8 @@ export interface APIResp {
 }
 
 export interface PagedAPIResp<T> extends APIResp {
-    "page#": Number,
-    page: Number,
+    "page#": number,
+    page: number,
     pages: Array<T>
 }
 
@@ -37,8 +37,8 @@ export default class mAPI {
         this.apiUrl = url.endsWith('/') ? url : url + "/";
     }
 
-    async getPosts(chatId: String, page: Number = 1): Promise<{
-        status: Number,
+    async getPosts(chatId: String, page: number = 1): Promise<{
+        status: number,
         body: ErrorApiResp | PagedAPIResp<Post>
     }> {
 
@@ -67,7 +67,7 @@ export default class mAPI {
 
     async sendPost(chatId: string, content: string): Promise<{
         body: Post | ErrorApiResp,
-        status: Number
+        status: number
     }> {
         let url;
         if (chatId === "home" || !chatId) {
