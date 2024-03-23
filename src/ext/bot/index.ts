@@ -1,5 +1,6 @@
 import Client from "../..";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface Context extends Object {
     _bot: Client,
 
@@ -18,7 +19,7 @@ export default class Bot extends Client {
     // groups
     commands: Map<string, Map<string, {
         func: (ctx: Context) => void;
-        help: String;
+        help: string;
         args: null | Array<string>;
     }>>;
 
@@ -29,7 +30,7 @@ export default class Bot extends Client {
 
     override login(username: string, password: string, prefix = `@${username}`) {
         this.prefix = prefix;
-        this.middleware = (ctx) => { return true; };
+        this.middleware = (_ctx) => { return true; };
         super.login(username, password)
     }
 
@@ -73,13 +74,13 @@ export default class Bot extends Client {
                 if (!await this.middleware(ctx)) return;
 
                 await callback(ctx);
-            } catch (e: any) {
-                e.ctx = ctx;
+            } catch (e) {
+                (e as any).ctx = ctx;
                 this.emit('.error', e);
                 console.error(e);
             }
         });
-    };
+    }
     /**
     * The middleware to use for `onCommand`
     */

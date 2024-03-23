@@ -12,14 +12,16 @@ if (window === undefined || window === null) {
     }) : undefined;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface Packet extends Object {
     cmd: string;
-    val: any | Object;
+    val: any | object;
     listener?: string;
 }
 
 
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 interface User extends Object {
     "account": {
         "_id": string,
@@ -54,12 +56,12 @@ interface User extends Object {
         "unread_inbox": boolean,
         "uuid": string,
     },
-    "relationships": Array<Object>
+    "relationships": Array<object>
     "token": string,
     "username": string,
 }
 
-export let bridges = ["Discord"]
+export const bridges = ["Discord"]
 
 export default class Client extends EventEmitter {
     ws!: WebSocket;
@@ -80,7 +82,7 @@ export default class Client extends EventEmitter {
         })
         
   
-    };
+    }
 
     /**
     * Connects to the (specified) server, then logs in
@@ -140,7 +142,7 @@ export default class Client extends EventEmitter {
 
             this.on('command-direct', (command: Packet) => {
                 command = JSON.parse(JSON.stringify(command))
-                if (!command.val.hasOwnProperty("type")) {
+                if (!Object.prototype.hasOwnProperty.call(command.val, "type")) {
                     return;
                 }
 
@@ -168,7 +170,7 @@ export default class Client extends EventEmitter {
             })
 
             this.ws.on("message", (data: string) => {
-                let packetData: Packet = JSON.parse(data);
+                const packetData: Packet = JSON.parse(data);
                 if (packetData.listener !== "mb.js-login") {
                     console.debug(`> ${data}`)
                 }
@@ -191,7 +193,7 @@ export default class Client extends EventEmitter {
     * Post to home, or a group chat, if specified
     */
     async post(content: string, id: string | null = null)  {
-
+        
     }
 
     /**
@@ -253,4 +255,4 @@ export default class Client extends EventEmitter {
         });
     }
 
-};
+}

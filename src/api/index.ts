@@ -1,7 +1,7 @@
 import Client from "../";
 
 export interface Config {
-    apiUrl: String,
+    apiUrl: string,
     client: Client
 }
 
@@ -25,7 +25,7 @@ export interface Post {
 }
 
 export default class mAPI {
-    apiUrl!: String;
+    apiUrl!: string;
     client: Client;
 
     constructor(config: Config) {
@@ -33,11 +33,11 @@ export default class mAPI {
         this.client = config.client;
     }
 
-    setUrl(url: String) {
+    setUrl(url: string) {
         this.apiUrl = url.endsWith('/') ? url : url + "/";
     }
 
-    async getPosts(chatId: String, page: number = 1): Promise<{
+    async getPosts(chatId: string, page: number = 1): Promise<{
         status: number,
         body: ErrorApiResp | PagedAPIResp<Post>
     }> {
@@ -52,7 +52,7 @@ export default class mAPI {
 
         url += `?page=${page}`
 
-        const request = await fetch(`${this.apiUrl}`, {
+        const request = await fetch(`${this.apiUrl}${url}`, {
             method: "GET",
             headers: {
                 token: this.client.user?.token
@@ -76,12 +76,12 @@ export default class mAPI {
             url = "/posts/" + chatId;
         }
 
-        let headers = {
+        const headers = {
             'Content-Type': 'application/json',
             'token': this.client.user.token
         };
 
-        let response = await fetch(`${this.apiUrl}${url}`, {
+        const response = await fetch(`${this.apiUrl}${url}`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({

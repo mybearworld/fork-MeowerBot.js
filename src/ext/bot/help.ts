@@ -35,7 +35,7 @@ export default function<T extends Bot> (bot: T): HelpBotMixin {
         if (!currentPage.endsWith("(Continued)\n")) 
             pages.push(currentPage);
 
-        //@ts-ignore
+        //@ts-expect-error: the function is never undefined.
         bot.commands.get('Help').get('help').help = `Pages: ${pages.length}`
     }
 

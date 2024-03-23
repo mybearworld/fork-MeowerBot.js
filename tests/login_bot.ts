@@ -21,14 +21,14 @@ bot.onCommand('whoami', async (ctx: Context) => {
 
 
     let message = `====== ${ctx.user} =====\n`
-    let req = (await fetch(`https://api.meower.org/users/${ctx.user}`))
+    const req = (await fetch(`https://api.meower.org/users/${ctx.user}`))
 
     if (!req.ok) {
         await ctx.reply("Uh oh, You arnt a real user????")
         return;
     }
 
-    let data = await req.json()
+    const data = await req.json()
 
     message = message.concat(`${data.quote}
 =====${"=".repeat(ctx.user.length + 4)}====
@@ -45,13 +45,11 @@ bot.onCommand('throw', async (ctx: Context) => {
     throw new Error(ctx.args.join(" "))
 }, 'Throws an error,\n then returns it.', ["message: String"])
 
-// @ts-ignore
 bot.on('.error', async (error: Error | any) => {
     if (error["ctx"] as any === undefined) return;
 
     await (error["ctx"] as Context).post(util.inspect(error))
 }) 
-
 
 bot.onCommandMiddleware(async (ctx: Context) => {
     await ctx.reply("Test middleware")

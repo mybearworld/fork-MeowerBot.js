@@ -26,7 +26,6 @@
     "@types/websocket": "^1.0.10",
     "events": "^3.3.0",
     "isomorphic-ws": "^5.0.0",
-    "typescript": "^5.4.3",
     "websocket": "^1.0.34",
     "ws": "^8.16.0"
   },
@@ -40,6 +39,8 @@
     "eslint": "^8.56.0",
     "eslint-plugin-ecmascript-compat": "^3.2.1",
     "glob": "^10.3.10",
+    "typescript": "^5.4.3",
+    "typescript-eslint": "^7.3.1",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4"
   }
