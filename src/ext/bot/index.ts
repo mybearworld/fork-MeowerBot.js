@@ -1,4 +1,4 @@
-import Client from "../../meower.js";
+import Client from "../..";
 
 export interface Context extends Object {
     _bot: Client,
@@ -22,15 +22,15 @@ export default class Bot extends Client {
         args: null | Array<string>;
     }>>;
 
-    constructor() {
-        super();
+    constructor(server = "wss://server.meower.org/", api = "https://api.meower.org") {
+        super(server, api);
         this.commands = new Map();
     }
 
-    override login(username: string, password: string, server = "wss://server.meower.org/", api = "https://api.meower.org", prefix = `@${username}`) {
+    override login(username: string, password: string, prefix = `@${username}`) {
         this.prefix = prefix;
         this.middleware = (ctx) => { return true; };
-        super.login(username, password, server, api)
+        super.login(username, password)
     }
 
     /**

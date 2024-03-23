@@ -1,4 +1,4 @@
-import Bot, { Context } from "./index.js";
+import Bot, { Context } from ".";
 
 interface HelpBotMixin extends Bot {
     genHelp(): void 

@@ -1,15 +1,16 @@
 {
-  "name": "meowerbot",
+  "name": "@meower-media/meower",
   "version": "2.0.0-alpha1",
-  "description": "Port of MeowerBot.py to TypeScript",
+  "description": "A Meower Client Lib!",
   "main": "dist/MeowerBot.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "pnpm run build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",
-    "build:tests": "tsc && cp -r ./dist/ ./tests/ && tsc -p tsconfig.tests.json "
+    "build:tests": "tsc && cp -r ./dist/ ./tests/ && tsc -p tsconfig.tests.json",
+    "build:browser": "pnpm run build && browserify -t babelify ./dist/index.js -o ./browser-dist/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -22,12 +23,24 @@
   },
   "homepage": "https://github.com/meower-community/MeowerBot.js#readme",
   "dependencies": {
+    "@types/websocket": "^1.0.10",
+    "events": "^3.3.0",
+    "isomorphic-ws": "^5.0.0",
     "typescript": "^5.4.3",
+    "websocket": "^1.0.34",
     "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.3",
+    "@babel/plugin-transform-modules-amd": "^7.24.1",
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
     "@types/node": "^20.11.30",
-    "@types/ws": "^8.5.10",
-    "eslint": "^8.56.0"
+    "babel-loader": "^9.1.3",
+    "eslint": "^8.56.0",
+    "eslint-plugin-ecmascript-compat": "^3.2.1",
+    "glob": "^10.3.10",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
   }
 }

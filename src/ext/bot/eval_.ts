@@ -1,5 +1,5 @@
-import { bridges } from "../../meower.js";
-import Bot, { Context } from "./index.js";
+import { bridges } from "../..";
+import Bot, { Context } from ".";
 
 export default function <T extends Bot>(bot: T, admins: Array<string>): T {
 

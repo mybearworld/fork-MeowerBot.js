@@ -1,9 +1,16 @@
-import WebSocket from "ws";
-import EventEmitter from "node:events";
+import  WebSocket from "isomorphic-ws";
+import EventEmitter from "events";
+import mAPI from "./api";
 
-process.on('unhandledrejection', (event) => {
-    throw new Error(event.reason)
-})
+if (window === undefined || window === null) {
+    process.on('unhandledrejection', (event: { reason: undefined}) => {
+        throw new Error(event.reason);
+    })
+} else {
+    window.onunhandledrejection?((event: { reason: undefined }) => {
+        throw new Error(event.reason);
+    }) : undefined;
+}
 
 export interface Packet extends Object {
     cmd: string;
@@ -55,22 +62,34 @@ interface User extends Object {
 export let bridges = ["Discord"]
 
 export default class Client extends EventEmitter {
-    api!: string;
     ws!: WebSocket;
     user!: User;
+    api: mAPI;
+    server: string;
+    apiUrl: string;
 
-    constructor() {
+    constructor(server = "wss://server.meower.org/", api = "https://api.meower.org") {
         super();
+
+        this.server = server;
+        this.apiUrl = api;
+
+        this.api = new mAPI({
+            client: this,
+            apiUrl: api
+        })
+        
+  
     };
 
     /**
     * Connects to the (specified) server, then logs in
     */
-    login(username: string, password: string, server = "wss://server.meower.org/", api = "https://api.meower.org") {
-        this.api = api;
-        this.ws = new WebSocket(server);
+    login(username: string, password: string, ) {
+        this.ws = new WebSocket();
+        this.ws.connect(this.server);
 
-        this.ws.on("open", async () => {
+        this.ws.on("connect", async () => {
             this.send({
                 "cmd": "direct",
                 "val": {
@@ -172,33 +191,7 @@ export default class Client extends EventEmitter {
     * Post to home, or a group chat, if specified
     */
     async post(content: string, id: string | null = null)  {
-        let url;
 
-        if (id === "home" || !id) {
-            url = "/home/";
-        } else {
-            url = "/posts/" + id;
-        }
-
-        let headers = {
-            'Content-Type': 'application/json',
-            'token': this.user.token
-        };
-
-        let response = await fetch(`${this.api}${url}`, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                'content': content
-            })
-        });
-
-        if (!response.ok) {
-            console.error(`[Meower] Failed to send post: ${await response.text()} @ ${response.status}`)
-            return null;
-        }
-
-        return await response.json();
     }
 
     /**

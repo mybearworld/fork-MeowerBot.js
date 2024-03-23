@@ -1,6 +1,6 @@
 import Bot, { Context } from '../dist/ext/bot/index.js'
 import help from "../dist/ext/bot/help.js"
-import { bridges } from '../dist/meower.js';
+import { bridges } from '../dist/index.js';
 import Eval from "../dist/ext/bot/eval_.js"
 
 import * as util from 'util';

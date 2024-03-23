@@ -8,7 +8,6 @@
         "sourceMap": true,
         "sourceRoot": "src",
         "declaration": true,
-        "target": "ES2021",        
-        
+ 
     }
 }

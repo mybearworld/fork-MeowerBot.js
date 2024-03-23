@@ -5,8 +5,10 @@
     /* Projects */
 
     /* Language and Environment */
-    "target": "ES2021",        
-                              
+    "target": "ES2022",        
+    "module": "CommonJS", // Use ES module syntax for browser
+    "moduleResolution": "node", // Resolve modules using Node.js style  
+
     "lib": [
       "ES2023",
       "DOM"
@@ -17,8 +19,8 @@
 
     /* JavaScript Support */
     "allowJs": true,                                     
-    "checkJs": true,                                     
-
+    "checkJs": true,     
+                                    
     /* Emit */
     "outDir": "./dist/",                                 
 
@@ -32,7 +34,7 @@
     "noImplicitOverride": true,                          
     /* Completeness */
     "skipLibCheck": true,
-
-                              
+    
+    "allowSyntheticDefaultImports": true
   }
 }
