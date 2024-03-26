@@ -4,7 +4,6 @@
         "src/**/*"
     ],
     "compilerOptions": {
-        "esModuleInterop": true,
         "sourceMap": true,
         "sourceRoot": "src",
         "declaration": true,

@@ -6,7 +6,8 @@
             "@dist/*": ["./tests/dist/*"],
             "@dist/MeowerBot": ["./tests/dist/MeowerBot"]
         },
-        "sourceRoot": "./tests"
+        "sourceRoot": "./tests",
+        "module": "CommonJS"
     },
     "include": [
         "./tests/**/*"

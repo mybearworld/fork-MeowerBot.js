@@ -3,24 +3,32 @@ import { dirname, resolve, join } from 'path';
 import { glob } from 'glob';
 import fs from 'fs'
 
-
 import pkg from 'webpack';
 const {BannerPlugin} = pkg;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default {
-
   entry: {
-     main: ["./dist/index.js"],
-     meower: glob.sync(join(__dirname, './dist/**/*.js'))
-  }, // Entry point of your compiled TypeScript code
+     meower: {
+      import: "./dist/index"
+     },
+     /*meower_ext: {
+      dependOn: "meower",
+      import: resolve("./dist/ext/index.js")
+     }*/
+  }, // Entry point of your compiled TypeScript code'
+
   output: {
     filename: '[name].bundle.js', // Output bundle file
     path: resolve(__dirname, 'browser-dist'), // Output directory
-    library: '@meower-media/meower',
+    library: {
+      name: 'Meower',
+      type: 'umd',
+    },
     libraryTarget: 'umd',
-    umdNamedDefine: true
+    umdNamedDefine: true,
+    publicPath: "./dist/index.js"
   },
   plugins: [
       new BannerPlugin({
@@ -29,8 +37,18 @@ export default {
         } 
       }),
     ],
-
+resolveLoader: {
+    modules: [
+        join(__dirname, 'node_modules')
+    ]
+},
+resolve: {
+    modules: [
+        join(__dirname, 'node_modules')
+    ]
+},
     module: {
+      
       rules: [
         {
           test: /\.js$/,
@@ -48,5 +66,5 @@ export default {
           }
         }
       ]
-    },
+    },    
 }

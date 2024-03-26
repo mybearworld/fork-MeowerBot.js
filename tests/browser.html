@@ -7,10 +7,14 @@
 </head>
 <body>
 
-    <script src="../browser-dist/meower.bundle.js"></script>
+<script src="../browser-dist/meower.bundle.js"></script>
 
 <script type="module">
-    const bot = new Client();
+
+    const client = new Meower.default()
+    client.login("ShowierData9978", "");
+
+    window.client = client;
     
 </script>
 </body>

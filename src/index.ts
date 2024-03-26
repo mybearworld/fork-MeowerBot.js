@@ -1,8 +1,8 @@
-import  WebSocket from "isomorphic-ws";
 import EventEmitter from "events";
 import mAPI from "./api";
+import WebSocket from './WSWrapper';
 
-if (window === undefined || window === null) {
+if (typeof window === "undefined" || window === null) {
     process.on('unhandledrejection', (event: { reason: undefined}) => {
         throw new Error(event.reason);
     })
@@ -88,8 +88,7 @@ export default class Client extends EventEmitter {
     * Connects to the (specified) server, then logs in
     */
     login(username: string, password: string, ) {
-        this.ws = new WebSocket();
-        this.ws.connect(this.server);
+        this.ws = new WebSocket(this.server);
 
         this.ws.on("connect", async () => {
             this.send({
@@ -122,6 +121,7 @@ export default class Client extends EventEmitter {
             }, 10000);
 
             this.on('listener-mb.js-login', (packet: Packet) => {
+                console.log("Got login packet!")
                 if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
                     console.error(`[Meower] Failed to login: ${packet.val}`)
                     throw new Error(`Failed to login: ${packet.val}`)
@@ -136,7 +136,7 @@ export default class Client extends EventEmitter {
                 this.emit("close");
             });
 
-            this.ws.on("packet", (data: string) => {
+            this.ws.on("message", (data: string) => {
                 this.emit("packet", data);
             });
 
