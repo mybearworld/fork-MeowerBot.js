@@ -1,11 +1,12 @@
 {
   "name": "@meower-media/meower",
-  "version": "2.0.0-alpha1",
+  "version": "2.0.0-alpha8",
   "description": "A Meower Client Lib!",
-  "main": "dist/MeowerBot.js",
+  "main": "dist/index.js",
+  "comment": "Required for webpack",
   "type": "commonjs",
   "scripts": {
-    "prepare": "pnpm run build",
+    "prepare": "pnpm run build:browser",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",

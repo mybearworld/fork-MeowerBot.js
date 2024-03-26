@@ -106,4 +106,4 @@ dist
 dist/
 .env
 tests/dist/
-browser-dist/
+browser/

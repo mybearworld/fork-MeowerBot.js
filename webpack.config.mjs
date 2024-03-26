@@ -1,6 +1,5 @@
 import { fileURLToPath } from 'url';
 import { dirname, resolve, join } from 'path';
-import { glob } from 'glob';
 import fs from 'fs'
 
 import pkg from 'webpack';
@@ -21,7 +20,7 @@ export default {
 
   output: {
     filename: '[name].bundle.js', // Output bundle file
-    path: resolve(__dirname, 'browser-dist'), // Output directory
+    path: resolve(__dirname, 'browser'), // Output directory
     library: {
       name: 'Meower',
       type: 'umd',
