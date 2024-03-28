@@ -9,3 +9,8 @@ A Meower Client Lib!
 npm install @meower-media/meower
 ```
 
+## Badges
+[![Strict TypeScript Checked](https://badgen.net/badge/TS/Strict "Strict TypeScript Checked")](https://www.typescriptlang.org)
+[![Lint](https://github.com/meower-media-co/Meower.js/actions/workflows/lint.yml/badge.svg)](https://github.com/meower-media-co/Meower.js/actions/workflows/lint.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![ESLint Badge](https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=fff&style=flat)
