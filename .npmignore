@@ -2,18 +2,4 @@
 
 !LICENSE
 !package.json
-!dist/** 
-
-
-# GitHub folder
-.github/
-
-# ESLint files
-.eslintrc.json
-
-# Documentation folder
-docs/
-
-tests/
-src/
-
+!dist/**

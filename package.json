@@ -1,6 +1,6 @@
 {
   "name": "@meower-media/meower",
-  "version": "0.2",
+  "version": "0.2.0",
   "description": "A Meower Client Lib!",
   "main": "dist/index.js",
   "type": "commonjs",
