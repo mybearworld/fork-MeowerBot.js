@@ -1,6 +1,8 @@
 import EventEmitter from "events";
 import mAPI from "./api";
 import WebSocket from './WSWrapper';
+import * as log from 'loglevel';
+
 
 if (typeof window === "undefined" || window === null) {
     process.on('unhandledrejection', (event: { reason: undefined}) => {
@@ -121,9 +123,9 @@ export default class Client extends EventEmitter {
             }, 10000);
 
             this.on('listener-mb.js-login', (packet: Packet) => {
-                console.log("Got login packet!")
+                log.debug("Got login packet!")
                 if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
-                    console.error(`[Meower] Failed to login: ${packet.val}`)
+                    log.error(`[Meower] Failed to login: ${packet.val}`)
                     throw new Error(`Failed to login: ${packet.val}`)
                 } else if (packet.val.mode === undefined) return;
 
@@ -172,7 +174,7 @@ export default class Client extends EventEmitter {
             this.ws.on("message", (data: string) => {
                 const packetData: Packet = JSON.parse(data);
                 if (packetData.listener !== "mb.js-login") {
-                    console.debug(`> ${data}`)
+                    log.debug(`> ${data}`)
                 }
                 try {
                     if (packetData.listener !== undefined) {
@@ -181,7 +183,7 @@ export default class Client extends EventEmitter {
 
                     this.emit(`command-${packetData.cmd}`, packetData)
                 } catch (e) {
-                    console.error(e);
+                    log.error(e);
                     this.emit('.error', e);
                     
                 }
@@ -245,7 +247,7 @@ export default class Client extends EventEmitter {
     */
     async send(packet: Packet) {
         if (packet.listener !== "mb.js-login") {
-            console.debug(`< ${JSON.stringify(packet)}`)
+            log.debug(`< ${JSON.stringify(packet)}`)
         }
         this.ws.send(JSON.stringify(packet));
     }
@@ -260,3 +262,5 @@ export default class Client extends EventEmitter {
     }
 
 }
+
+export {Client}

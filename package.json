@@ -3,14 +3,13 @@
   "version": "2.0.0-alpha8",
   "description": "A Meower Client Lib!",
   "main": "dist/index.js",
-  "comment": "Required for webpack",
   "type": "commonjs",
   "scripts": {
     "prepare": "pnpm run build:browser",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc",
-    "build:tests": "tsc && cp -r ./dist/ ./tests/ && tsc -p tsconfig.tests.json",
+    "build:tests": "pnpm pack && cd tests && pnpm install ../meower-media-meower*.tgz && cd .. && tsc -p tsconfig.tests.json && rm meower-media-meower*.tgz",
     "build:browser": "pnpm run build && webpack --mode='production'"
   },
   "repository": {
@@ -26,6 +25,7 @@
   "dependencies": {
     "events": "^3.3.0",
     "isomorphic-ws": "^5.0.0",
+    "loglevel": "^1.9.1",
     "ws": "^8.16.0"
   },
   "devDependencies": {

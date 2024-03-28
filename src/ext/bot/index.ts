@@ -89,3 +89,5 @@ export default class Bot extends Client {
         this.middleware = callback;
     }
 }
+
+export {Bot}

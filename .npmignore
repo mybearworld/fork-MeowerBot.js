@@ -1,3 +1,10 @@
+*
+
+!LICENSE
+!package.json
+!dist/** 
+
+
 # GitHub folder
 .github/
 
@@ -6,3 +13,7 @@
 
 # Documentation folder
 docs/
+
+tests/
+src/
+
