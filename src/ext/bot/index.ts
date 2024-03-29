@@ -1,5 +1,5 @@
 import Client from "../..";
-import { Post } from "../../api";
+import { Post } from "../../api/posts";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface Context extends Object {
