@@ -1,4 +1,5 @@
 import Client from "../";
+import MPosts from "./posts";
 
 export interface Config {
     apiUrl: string,
@@ -20,85 +21,38 @@ export interface ErrorApiResp {
     error: true
 }
 
-export interface Post { 
-    
-}
 
 export default class mAPI {
     apiUrl!: string;
     client: Client;
+    posts: MPosts;
 
     constructor(config: Config) {
         this.setUrl(config.apiUrl);
         this.client = config.client;
+        this.posts = new MPosts(this);
     }
 
     setUrl(url: string) {
         this.apiUrl = url.endsWith('/') ? url : url + "/";
     }
 
-    async getPosts(chatId: string, page: number = 1): Promise<{
-        status: number,
-        body: ErrorApiResp | PagedAPIResp<Post>
-    }> {
+    async getStatus(): Promise<{
+        scratchDeprecated: boolean; 
+        registrationEnabled: boolean;
+        isRepairMode: boolean;
+        ipBlocked: boolean;
+        ipRegistrationBlocked: boolean;
+   }> {
 
-        let url;
-
-        if (chatId !== "home") {
-            url = `posts/${chatId}`
-        } else {
-            url = "home"
-        }
-
-        url += `?page=${page}`
-
-        const request = await fetch(`${this.apiUrl}${url}`, {
-            method: "GET",
-            headers: {
-                token: this.client.user?.token
-            }
-        })
-
-        return {
-            status: request.status,
-            body: await request.json() 
-       }
+        return await (await fetch(`${this.apiUrl}/status`)).json()
     }
 
-    async sendPost(chatId: string, content: string): Promise<{
-        body: Post | ErrorApiResp,
-        status: number
-    }> {
-        let url;
-        if (chatId === "home" || !chatId) {
-            url = "/home/";
-        } else {
-            url = "/posts/" + chatId;
-        }
-
-        const headers = {
-            'Content-Type': 'application/json',
-            'token': this.client.user.token
-        };
-
-        const response = await fetch(`${this.apiUrl}${url}`, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                'content': content
-            })
-        });
-
-        if (!response.ok) {
-            console.error(`[Meower] Failed to send post: ${response.status}`)
-        }
-
-        return {
-            body: await response.json(),
-            status: response.status,
-
-        }
-        
-        
+    async getStatistics(): Promise<APIResp & {
+        users: number,
+        posts: number,
+        chats: number
+    } | ErrorApiResp> {
+        return await (await fetch(`${this.apiUrl}/statistics`)).json()
     }
 }
