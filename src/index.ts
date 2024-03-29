@@ -89,7 +89,7 @@ export default class Client extends EventEmitter {
     /**
     * Connects to the (specified) server, then logs in
     */
-    login(username: string, password: string, ) {
+    login(username: string | null, password: string | null, ) {
         this.ws = new WebSocket(this.server);
 
         this.ws.on("connect", async () => {
@@ -100,7 +100,10 @@ export default class Client extends EventEmitter {
                     "val": "js"
                 }
             });
-
+            if (!username || !password) {
+                this.emit("login");
+                return;
+            }
             this.send({
                 "cmd": "direct",
                 "val": {
