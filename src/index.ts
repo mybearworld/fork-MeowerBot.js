@@ -3,6 +3,7 @@ import mAPI from "./api";
 import WebSocket from './WSWrapper';
 import * as log from 'loglevel';
 import { Post } from "./api/posts";
+import { Chat } from "./api/chats";
 
 
 if (typeof window === "undefined" || window === null) {
@@ -28,7 +29,7 @@ export interface Packet extends Object {
 interface User extends Object {
     account: {
         _id: string,
-        active_dms: Array<any>
+        active_dms: Array<Chat>
         avatar: string,
         avatar_color: string,
         ban: {
@@ -43,7 +44,7 @@ interface User extends Object {
         created: number,
         debug: boolean,
         experiments: number,
-        favorited_chats: Array<any>,
+        favorited_chats: Array<Chat>,
         flags: number,
         hide_blocked_users: boolean,
         last_seen: number,
