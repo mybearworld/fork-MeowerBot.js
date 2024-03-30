@@ -2,14 +2,15 @@ import EventEmitter from "events";
 import mAPI from "./api";
 import WebSocket from './WSWrapper';
 import * as log from 'loglevel';
+import { Post } from "./api/posts";
 
 
 if (typeof window === "undefined" || window === null) {
-    process.on('unhandledrejection', (event: { reason: undefined}) => {
+    process.on('unhandledrejection', (event: { reason: undefined }) => {
         throw new Error(event.reason);
     })
 } else {
-    window.onunhandledrejection?((event: { reason: undefined }) => {
+    window.onunhandledrejection ? ((event: { reason: undefined }) => {
         throw new Error(event.reason);
     }) : undefined;
 }
@@ -25,42 +26,42 @@ export interface Packet extends Object {
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 interface User extends Object {
-    "account": {
-        "_id": string,
-        "active_dms": Array<any>
-        "avatar": string,
-        "avatar_color": string,
-        "ban": {
-            "expires": number,
-            "reason": string,
-            "restrictions": number,
-            "state": "temp_restriction"
+    account: {
+        _id: string,
+        active_dms: Array<any>
+        avatar: string,
+        avatar_color: string,
+        ban: {
+            expires: number,
+            reason: string,
+            restrictions: number,
+            state: string
         },
-        "banned": boolean,
-        "bgm": false,
-        "bgm_song": number,
-        "created": number,
-        "debug": boolean,
-        "experiments": number,
-        "favorited_chats": Array<any>,
-        "flags": number,
-        "hide_blocked_users": boolean,
-        "last_seen": number,
-        "layout": string,
-        "lower_username": string,
-        "lvl": number,
-        "mode": boolean,
-        "permissions": number,
-        "pfp_data": number,
-        "quote": string,
-        "sfx": boolean,
-        "theme": string,
-        "unread_inbox": boolean,
-        "uuid": string,
+        banned: boolean,
+        bgm: false,
+        bgm_song: number,
+        created: number,
+        debug: boolean,
+        experiments: number,
+        favorited_chats: Array<any>,
+        flags: number,
+        hide_blocked_users: boolean,
+        last_seen: number,
+        layout: string,
+        lower_username: string,
+        lvl: number,
+        mode: boolean,
+        permissions: number,
+        pfp_data: number,
+        quote: string,
+        sfx: boolean,
+        theme: string,
+        unread_inbox: boolean,
+        uuid: string,
     },
-    "relationships": Array<object>
-    "token": string,
-    "username": string,
+    relationships: Array<object>
+    token: string,
+    username: string,
 }
 
 export const bridges = ["Discord"]
@@ -82,14 +83,14 @@ export default class Client extends EventEmitter {
             client: this,
             apiUrl: api
         })
-        
-  
+
+
     }
 
     /**
     * Connects to the (specified) server, then logs in
     */
-    login(username: string | null, password: string | null, ) {
+    login(username: string | null, password: string | null,) {
         this.ws = new WebSocket(this.server);
 
         this.ws.on("connect", async () => {
@@ -151,26 +152,13 @@ export default class Client extends EventEmitter {
                     return;
                 }
 
-                command.val.bridged = null;
-                if (bridges.includes(command.val.u)) {
-                    command.val.bridged = JSON.parse(JSON.stringify(command));
-                    const data: Array<string> = (command.val.p as string).split(":");
-                    
-                    if (command.val.u === 'Webhooks') {
-                        data.splice(0, 1);
-                    }
-
-                    command.val.u = data[0];
-                    command.val.p = data[1]?.trimStart().concat(data.slice(2, data.length).join(":"));
-                    command.val.bridged = true;
-                }
-
+                const post: Post = this.handleBridgedPost(command.val);
 
                 this.emit("post",
-                    command.val.u,
-                    command.val.p,
-                    command.val.post_origin,
-                    {bridged: command.val.bridged}
+                    post.u,
+                    post.p,
+                    post.post_origin,
+                    { bridged: typeof command.val.bridged !== "undefined", raw: post }
                 );
             })
 
@@ -188,30 +176,51 @@ export default class Client extends EventEmitter {
                 } catch (e) {
                     log.error(e);
                     this.emit('.error', e);
-                    
+
                 }
             });
         });
     }
 
+    handleBridgedPost(post: Post): Post {
+
+        if (bridges.includes(post.u)) {
+            post.bridged = JSON.parse(JSON.stringify(post));
+            const data: Array<string> = (post.p).split(":");
+
+            if (post.u === 'Webhooks') {
+                data.splice(0, 1);
+            }
+            if (data.length < 1) {
+                return post.bridged as Post;
+            }
+
+            post.u = data[0] as string;
+            post.p = (data[1] as string).trimStart().concat(data.slice(2, data.length).join(":"));
+            return post;
+        }
+
+        return post;
+    }
+
     /**
     * Post to home, or a group chat, if specified
     */
-    async post(content: string, id: string | null = null)  {
+    async post(content: string, id: string | null = null) {
         const resp = await this.api.posts.send(id ? id : "home", content)
-        if (resp.status !== 200) 
+        if (resp.status !== 200)
             return null;
 
-        return resp.body
+        return resp.body as Post;
     }
 
     /**
     * Executes the callback when a new post is sent
 
     */
-    onPost(callback: (username: string, content: string, origin: string, {bridged}: {bridged: boolean}) => void | Promise<void>) {
-        this.on("post", async (username: string, content: string, origin: string, bridged: {bridged: boolean}) => {
-            await callback(username, content, origin, bridged);
+    onPost(callback: (username: string, content: string, origin: string, { bridged, raw }: { bridged: boolean, raw: Post }) => void | Promise<void>) {
+        this.on("post", async (username: string, content: string, origin: string, extra: { bridged: boolean, raw: Post }) => {
+            await callback(username, content, origin, extra);
         });
     }
 
@@ -244,7 +253,7 @@ export default class Client extends EventEmitter {
         });
     }
 
-    
+
     /**
     * Sends a packet to the server
     */
@@ -266,4 +275,4 @@ export default class Client extends EventEmitter {
 
 }
 
-export {Client}
+export { Client }

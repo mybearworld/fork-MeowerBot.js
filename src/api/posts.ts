@@ -3,7 +3,23 @@ import { Client } from "../"
 import * as log from 'loglevel';
 
 export interface Post {
-
+    bridged?: Post;
+    _id: string
+    isDeleted: boolean,
+    p: string
+    post_id: string,
+    post_origin: string,
+    t: {
+        d: string
+        e: number, // epoch time (*seconds* (not milliseconds!) since January 1 1970)
+        h: string,
+        mi: string,
+        mo: string,
+        s: string, // second
+        y: string // year
+    },
+    type: 1 | 2, // 2 for inbox messages, 1 for everything else
+    u: string
 }
 
 
@@ -30,8 +46,8 @@ export default class MPosts {
             url = "home"
         }
 
-        url += `?page=${page}?autoget=1`
-
+        url += `?autoget=1&page=${page || 1}`
+        log.debug(`[Meower] Fetching posts from ${url}`)
         const request = await fetch(`${this.root.apiUrl}${url}`, {
             method: "GET",
             headers: {
