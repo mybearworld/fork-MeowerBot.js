@@ -1,5 +1,7 @@
 import Client from "../";
+import MChats from "./chats";
 import MPosts from "./posts";
+import MUsers from "./users";
 
 export interface Config {
     apiUrl: string,
@@ -14,7 +16,7 @@ export interface APIResp {
 export interface PagedAPIResp<T> extends APIResp {
     "page#": number,
     page: number,
-    pages: Array<T>
+    autoget: Array<T>
 }
 
 export interface ErrorApiResp {
@@ -26,11 +28,15 @@ export default class mAPI {
     apiUrl!: string;
     client: Client;
     posts: MPosts;
+    chats: MChats;
+    users: MUsers;
 
     constructor(config: Config) {
         this.setUrl(config.apiUrl);
         this.client = config.client;
         this.posts = new MPosts(this);
+        this.chats = new MChats(this);
+        this.users = new MUsers(this);
     }
 
     setUrl(url: string) {

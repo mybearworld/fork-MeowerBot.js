@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import mAPI from "./api";
+import mAPI, { PagedAPIResp } from "./api";
 import WebSocket from './WSWrapper';
 import * as log from 'loglevel';
 import { Post } from "./api/posts";
@@ -63,6 +63,12 @@ interface User extends Object {
     relationships: Array<object>
     token: string,
     username: string,
+
+    extra?: {
+        chats: {
+            [key: string]: Chat
+        }
+    }
 }
 
 export const bridges = ["Discord"]
@@ -127,16 +133,25 @@ export default class Client extends EventEmitter {
                 }
             }, 10000);
 
-            this.on('listener-mb.js-login', (packet: Packet) => {
+            this.on('listener-mb.js-login', async (packet: Packet) => {
                 log.debug("Got login packet!")
                 if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
-                    log.error(`[Meower] Failed to login: ${packet.val}`)
-                    throw new Error(`Failed to login: ${packet.val}`)
+                    log.error(`[Meower] Failed to login: ${packet.val}`);
+                    this.emit('.error', Error(`Failed to login: ${packet.val}`));
+                    return;
                 } else if (packet.val.mode === undefined) return;
 
                 this.user = packet.val.payload;
-
-                this.emit("login");
+                try {
+                    const chats =  Object.fromEntries(((await this.api.chats.get()).body as PagedAPIResp<Chat>).autoget.map((chat: Chat) => {
+                        return [chat._id, chat];
+                    }));
+                    this.user.extra = {chats: chats};
+                    this.emit("login");
+                } catch (e) {
+                    log.error(e);
+                    this.emit('.error', e);
+                }
             });
 
             this.ws.on("close", () => {

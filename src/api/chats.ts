@@ -31,7 +31,7 @@ export default class MChats {
         body: PagedAPIResp<Chat> | ErrorApiResp,
         status: number
     }> {
-        const resp = await fetch(`${this.root.apiUrl}/chats/`, {
+        const resp = await fetch(`${this.root.apiUrl}/chats?autoget=1`, {
             headers: { token: this.client.user.token }
         })
 
