@@ -1,8 +1,12 @@
 # MeowerBot.js
 A Meower Client Lib!
 
+> [!NOTE]
+> WE DO NOT CARE ABOUT EXTERNAL SERVERS THAT MAKE BREAKING CHANGES TO THE API. That is out of scope for this project.
+
 > [!WARNING]  
 > This Library is in SUPER early beta. Breaking changes can happen at ANY moment.
+
 
 ## Installation
 ```bash
