@@ -1,4 +1,4 @@
-# MeowerBot.js
+# Meower.js
 A Meower Client Lib!
 
 > [!NOTE]
