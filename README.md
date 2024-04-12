@@ -2,7 +2,7 @@
 A javascript library for Meower
 
 > [!NOTE]
-> Support for unnofficial servers that create breaking changes to the API **will not be supported**. You are free to fork this library and make any neccesary changes to work on your server, but they will not be merged into the main repo.
+> Unnofficial servers that create breaking changes to the API **will not be supported**. You are free to fork this library and make any neccesary changes to work on your server, but they will not be merged into the main repo.
 
 > [!WARNING]  
 > This library is in very early development, therefore major changes may happen at any time and break existing code.
