@@ -1,11 +1,11 @@
 # Meower.js
-A Meower Client Lib!
+A javascript library for Meower
 
 > [!NOTE]
-> WE DO NOT CARE ABOUT EXTERNAL SERVERS THAT MAKE BREAKING CHANGES TO THE API. That is out of scope for this project.
+> Support for unnofficial servers that create breaking changes to the API **will not be supported**. You are free to fork this library and make any neccesary changes to work on your server, but they will not be merged into the main repo.
 
 > [!WARNING]  
-> This Library is in SUPER early beta. Breaking changes can happen at ANY moment.
+> This library is in very early development, therefore major changes may happen at any time and break existing code.
 
 
 ## Installation
