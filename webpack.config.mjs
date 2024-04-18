@@ -12,10 +12,11 @@ export default {
     meower: {
       import: "./dist/index"
     },
-    /*meower_ext: {
-     dependOn: "meower",
-     import: resolve("./dist/ext/index.js")
-    }*/
+    bot: {
+      import: "./dist/ext/bot/index",
+      dependOn: ['meower']
+    },
+
   }, // Entry point of your compiled TypeScript code'
 
   output: {
