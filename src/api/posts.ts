@@ -22,6 +22,29 @@ export interface Post {
     u: string
 }
 
+function _isPost(obj: any): obj is Post {
+    if (obj === null || typeof obj !== "object") return false;
+    if (typeof obj._id !== "string")             return false;
+    if (typeof obj.isDeleted !== "boolean")      return false;
+    if (typeof obj.p !== "string")               return false;
+    if (typeof obj.post_id !== "string")         return false;
+    if (typeof obj.post_origin !== "string")     return false;
+    if (typeof obj.t !== "object")               return false;
+    if (obj.type !== 1 && obj.type !== 2)        return false;
+    if (typeof obj.u !== "string")               return false;
+
+    return true;
+}
+
+type GenericResp = {
+    body: ErrorApiResp | APIResp;
+    status: number;
+};
+
+type PostResp = {
+    body: ErrorApiResp | (APIResp & Post);
+    status: number;
+};
 
 export default class MPosts {
     root: mAPI;
@@ -61,10 +84,7 @@ export default class MPosts {
         }
     }
 
-    async send(chatId: string, content: string): Promise<{
-        body: Post | ErrorApiResp,
-        status: number
-    }> {
+    async send(chatId: string, content: string): Promise<PostResp> {
         let url;
         if (chatId === "home" || !chatId) {
             url = "/home/";
@@ -88,18 +108,22 @@ export default class MPosts {
         if (!response.ok) {
             log.error(`[Meower] Failed to send post: ${response.status}`)
         }
-
+        const data: APIResp | ErrorApiResp  = await response.json()
+        if (!_isPost(data)) {
+            return {
+                body: {error: true},
+                status: 500
+            }
+        }
+        data.error = false;
         return {
-            body: await response.json(),
+            body: data,
             status: response.status,
         }
 
     }
 
-    async delete(postId: string): Promise<{
-        body: ErrorApiResp | APIResp,
-        status: number
-    }> {
+    async delete(postId: string): Promise<GenericResp> {
         const resp = await fetch(`${this.root.apiUrl}/posts/?id=${postId}`, {
             method: "DELETE",
             headers: {
@@ -114,10 +138,7 @@ export default class MPosts {
         }
     }
 
-    async pin(postId: string): Promise<{
-        body: ErrorApiResp | (APIResp & Post)
-        status: number
-    }> {
+    async pin(postId: string): Promise<PostResp> {
         const resp = (await fetch(`${this.root.apiUrl}/posts/${postId}`, {
             method: "POST",
             headers: {
@@ -126,17 +147,21 @@ export default class MPosts {
             }
 
         }))
+        const data: ErrorApiResp | APIResp = await resp.json()
+        if (!_isPost(data)) {
+            return {
+                body: {error: true},
+                status: 500
+            }
+        }
 
         return {
-            body: await resp.json(),
+            body: data,
             status: resp.status
         }
     }
 
-    async unpin(postId: string): Promise<{
-        body: ErrorApiResp | (APIResp & Post)
-        status: number
-    }> {
+    async unpin(postId: string): Promise<PostResp> {
         const resq = (await fetch(`${this.root.apiUrl}/posts/${postId}`, {
             method: "POST",
             headers: {
@@ -144,9 +169,17 @@ export default class MPosts {
                 'token': this.client.user.token
             }
         }))
+        const data: ErrorApiResp | APIResp = await resq.json()
+
+        if (!_isPost(data)) {
+            return {
+                body: {error: true},
+                status: 500
+            }
+        }
 
         return {
-            body: await resq.json(),
+            body: data,
             status: resq.status
         }
     }
