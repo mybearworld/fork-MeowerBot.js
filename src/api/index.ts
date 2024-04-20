@@ -99,4 +99,16 @@ export default class mAPI {
         return data;
 
     }
+
+    async signUp(username: string, password: string) {
+        // grumble another WS command thats going to be moved to API
+        await this.client.send({
+            "cmd": "gen_account",
+            val: {
+                username: username,
+                pswd: password
+            },
+            listener: "mb.js-login"
+        })
+    }
 }

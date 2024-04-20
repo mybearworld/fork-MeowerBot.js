@@ -41,13 +41,25 @@ type ChatResp = {
 export default class MChats {
     root: mAPI;
     client: Client;
+    cache: Map<string, Chat> & {lastPage: number} = new Map() as any;
 
     constructor(root: mAPI) {
         this.root = root;
         this.client = this.root.client;
     }
 
-    async get(): Promise<ChatResp> {
+    async get(page: number): Promise<ChatResp> {
+        if (this.cache.lastPage >= page) {
+            return {
+                body: {
+                    error: false,
+                    "page#": page,
+                    page: page,
+                    autoget: Array.from(this.cache.values())
+                },
+                status: 200
+            }
+        }
         const resp = await fetch(`${this.root.apiUrl}/chats?autoget=1`, {
             headers: { token: this.client.user.token }
         })
@@ -63,5 +75,23 @@ export default class MChats {
             body: data,
             status: resp.status
         }
+    }
+
+    // this not being async is not important, as we don't need to wait for the server to respond
+    send_typing_indicator(chatId: string) {
+        let url = this.root.apiUrl;
+
+        if (chatId !== "home") {
+            url += `chats/${chatId}/typing`
+        } else {
+            url += "home/typing"
+        }
+
+        fetch(url, {
+            method: "POST",
+            headers: {
+                token: this.client.user.token
+            }
+        })
     }
 }

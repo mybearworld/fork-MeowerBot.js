@@ -143,7 +143,7 @@ export default class Client extends EventEmitter {
 
                 this.user = packet.val.payload;
                 try {
-                    const chats =  Object.fromEntries(((await this.api.chats.get()).body as PagedAPIResp<Chat>).autoget.map((chat: Chat) => {
+                    const chats =  Object.fromEntries(((await this.api.chats.get(1)).body as PagedAPIResp<Chat>).autoget.map((chat: Chat) => {
                         return [chat._id, chat];
                     }));
                     this.user.extra = {chats: chats};

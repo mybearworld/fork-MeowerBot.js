@@ -22,7 +22,7 @@ export interface Post {
     u: string
 }
 
-function _isPost(obj: any): obj is Post {
+export function isPost(obj: any): obj is Post {
     if (obj === null || typeof obj !== "object") return false;
     if (typeof obj._id !== "string")             return false;
     if (typeof obj.isDeleted !== "boolean")      return false;
@@ -41,14 +41,16 @@ type GenericResp = {
     status: number;
 };
 
-type PostResp = {
-    body: ErrorApiResp | (APIResp & Post);
+export type PostResp = {
+    body: ErrorApiResp | PagedAPIResp<Post> | APIResp & Post;
     status: number;
 };
 
 export default class MPosts {
     root: mAPI;
     client: Client;
+    cache: Map<string, Map<string, Post> & {lastPage: number}> = new Map() as any;
+    searchCache: Array<{time: number, posts: Array<Post>}> = [];
 
     constructor(root: mAPI) {
         this.root = root;
@@ -60,6 +62,21 @@ export default class MPosts {
         status: number,
         body: ErrorApiResp | PagedAPIResp<Post>
     }> {
+        if (this.cache.has(chatId) && this.cache.get(chatId)!.lastPage >= page) {
+            return {
+                status: 200,
+                body: {
+                    error: false,
+                    "page#": page,
+                    page: page,
+                    autoget: Array.from(this.cache.get(chatId)!.values())
+                }
+            }
+        }
+
+        const chatCache: Map<string, Post> & {lastPage: number} = new Map<string, Post>() as any;
+        chatCache.lastPage = page;
+        this.cache.set(chatId, chatCache);
 
         let url;
 
@@ -78,9 +95,15 @@ export default class MPosts {
             }
         })
 
+        const data: PagedAPIResp<Post> = await request.json()
+
+        data.autoget.forEach((post: Post) => {
+            chatCache.set(post._id, post);
+        });
+
         return {
             status: request.status,
-            body: await request.json()
+            body: data
         }
     }
 
@@ -108,8 +131,8 @@ export default class MPosts {
         if (!response.ok) {
             log.error(`[Meower] Failed to send post: ${response.status}`)
         }
-        const data: APIResp | ErrorApiResp  = await response.json()
-        if (!_isPost(data)) {
+        const data: PagedAPIResp<Post> = await response.json()
+        if (!isPost(data)) {
             return {
                 body: {error: true},
                 status: 500
@@ -147,8 +170,8 @@ export default class MPosts {
             }
 
         }))
-        const data: ErrorApiResp | APIResp = await resp.json()
-        if (!_isPost(data)) {
+        const data: PagedAPIResp<Post> = await resp.json()
+        if (!isPost(data)) {
             return {
                 body: {error: true},
                 status: 500
@@ -171,7 +194,7 @@ export default class MPosts {
         }))
         const data: ErrorApiResp | APIResp = await resq.json()
 
-        if (!_isPost(data)) {
+        if (!isPost(data)) {
             return {
                 body: {error: true},
                 status: 500
@@ -181,6 +204,51 @@ export default class MPosts {
         return {
             body: data,
             status: resq.status
+        }
+    }
+    
+    async report(post_id: string, reason: string, comment: string) {
+        await this.client.send({ // ugh
+            cmd: "report",
+            val: {
+                id: post_id,
+                type: 0,
+                reason: reason,
+                comment: comment
+            }
+        })
+    }
+    
+    async search(query: string, page: number = 1): Promise<PostResp> {
+        if (this.searchCache.length >= page && this.searchCache[page - 1]!.time > Date.now() - 1000 * 60 * 30) {
+            return {
+                body: {
+                    error: false,
+                    "page#": page,
+                    page: page,
+                    autoget: this.searchCache[page - 1]!.posts
+                },
+                status: 200
+            }
+        }
+
+
+        
+        const response = await fetch(`${this.root.apiUrl}/search/home/?autoget&q=${query}&page=${page}`, {
+            method: 'GET',
+            headers: {
+                token: this.client.user.token
+            },
+        });
+
+        const data = await response.json()
+        if (!data.error) {
+            this.searchCache[page - 1] = {time: Date.now(), posts: data.autoget}
+        }
+
+        return {
+            status: response.status,
+            body: data
         }
     }
 }
