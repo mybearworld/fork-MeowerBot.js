@@ -1,6 +1,7 @@
 
-import mAPI, { ErrorApiResp, PagedAPIResp } from ".";
+import mAPI, { APIResp, ErrorApiResp, PagedAPIResp } from ".";
 import { Client } from "../"
+import { Icon } from "./uploads";
 
 export interface Chat {
     _id: string,
@@ -71,6 +72,162 @@ export default class MChats {
                 status: 500
             }
         }
+        return {
+            body: data,
+            status: resp.status
+        }
+    }
+
+    async create(nickname: string, icon: Icon | undefined, allow_pinning: boolean = false): Promise<ErrorApiResp | (Chat & APIResp)> {
+        const hexCode = icon?.color.toString(16) || "000000";
+        if (hexCode.length < 6) {
+            throw new Error("Invalid color code")
+        }
+
+        const resp = await fetch(`${this.root.apiUrl}/chats`, {
+            method: "POST",
+            headers: {
+                token: this.client.user.token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nickname,
+                icon: icon?.id || "",
+                icon_color: hexCode,
+                allow_pinning
+            })
+        })
+
+        const data = await resp.json()
+        if (!data.error && !_checkIfChat(data)) {
+            return { error: true }
+        }
+
+        return data
+    }
+    async leave(chatId: string): Promise<number> {
+        const resp = await fetch(`${this.root.apiUrl}/chats/${chatId}`, {
+            method: "DELETE",
+            headers: {
+                token: this.client.user.token
+            }
+        })
+
+        return resp.status
+    }
+
+    async update(chatId: string, nickname: string | undefined, icon: Icon | undefined, allow_pinning: boolean | undefined = false): Promise<{
+        body: ErrorApiResp | (Chat & APIResp),
+        status: number
+    }> {
+        let hexCode = null;
+        let iconId = null;
+        if (icon !== undefined) {
+            hexCode = icon.color.toString(16);
+            iconId = icon.id;
+            if (hexCode.length < 6) {
+                throw new Error("Invalid color code")
+            }
+        }
+
+        const resp = await fetch(`${this.root.apiUrl}/chats/${chatId}`, {
+            method: "PATCH",
+            headers: {
+                token: this.client.user.token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nickname: nickname === undefined ? null : nickname,
+                icon: iconId,
+                icon_color: hexCode === null ? null : hexCode,
+                allow_pinning: allow_pinning === undefined ? null : allow_pinning
+            })
+        })
+        
+        const data = await resp.json()
+        if (!data.error && !_checkIfChat(data)) {
+            return {
+                body: { error: true },
+                status: 500
+            }
+        }
+
+        return {
+            body: data,
+            status: resp.status
+        }
+    }
+
+    async transferOwnership(chatId: string, userId: string): Promise<{
+        body: ErrorApiResp | (Chat & APIResp),
+        status: number
+    }> {
+        const resp = await fetch(`${this.root.apiUrl}/chats/${chatId}/members/${userId}/transfer`, {
+            method: "POST",
+            headers: {
+                token: this.client.user.token,
+            }
+        })
+
+        const data = await resp.json()
+        if (!data.error && !_checkIfChat(data)) {
+            return {
+                body: { error: true },
+                status: 500
+            }
+        }
+
+        return {
+            body: data,
+            status: resp.status
+        }
+    }
+
+
+    async addMember(chatId: string, userId: string): Promise<{
+        body: ErrorApiResp | (Chat & APIResp),
+        status: number
+    }> {
+        const resp = await fetch(`${this.root.apiUrl}/chats/${chatId}/members/${userId}`, {
+            method: "PUT",
+            headers: {
+                token: this.client.user.token
+            }
+        })
+
+        const data = await resp.json()
+        if (!data.error && !_checkIfChat(data)) {
+            return {
+                body: { error: true },
+                status: 500
+            }
+        }
+
+        return {
+            body: data,
+            status: resp.status
+        }
+    }
+
+    async removeMember(chatId: string, userId: string): Promise<{
+        body: ErrorApiResp | (Chat & APIResp),
+        status: number
+    }> {
+        const resp = await fetch(`${this.root.apiUrl}/chats/${chatId}/members/${userId}`, {
+            method: "DELETE",
+            headers: {
+                token: this.client.user.token
+            }
+        })
+
+        const data = await resp.json()
+        if (!data.error && !_checkIfChat(data)) {
+            return {
+                body: { error: true },
+                status: 500
+            }
+        }
+
         return {
             body: data,
             status: resp.status

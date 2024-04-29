@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@meower-media/meower':
-    specifier: file:../meower-media-meower-2.0.0-alpha10.tgz
-    version: file:../meower-media-meower-2.0.0-alpha10.tgz
+    specifier: file:../meower-media-meower-2.0.0-alpha12-beta1.tgz
+    version: file:../meower-media-meower-2.0.0-alpha12-beta1.tgz
   loglevel:
     specifier: ^1.9.1
     version: 1.9.1
@@ -45,10 +45,10 @@ packages:
         optional: true
     dev: false
 
-  file:../meower-media-meower-2.0.0-alpha10.tgz:
-    resolution: {integrity: sha512-koMsqnBMcVPRjXm8mzOnO7B5YXW7mNIppfHbwKMDnyFxdGKWUwkgnpVqQvCj/O2SsFQueEuEXsOqzrwJISt7nQ==, tarball: file:../meower-media-meower-2.0.0-alpha10.tgz}
+  file:../meower-media-meower-2.0.0-alpha12-beta1.tgz:
+    resolution: {integrity: sha512-a1b6f2mECQS8G5d8yLrlDGxR9VE8qs6Xis6Ew9cGBmu0SeZazIdnINELi2tsXqc2hlC79kWT+vjv4i/VAp1aDQ==, tarball: file:../meower-media-meower-2.0.0-alpha12-beta1.tgz}
     name: '@meower-media/meower'
-    version: 2.0.0-alpha10
+    version: 2.0.0-alpha12-beta1
     dependencies:
       events: 3.3.0
       isomorphic-ws: 5.0.0(ws@8.16.0)

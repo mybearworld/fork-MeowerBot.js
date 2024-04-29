@@ -4,7 +4,7 @@ import { Post, PostResp } from "./posts";
 
 export interface User {
     _id: string,
-    avatar: string,
+    avatar: string | null,
     avatar_color: string,
     banned: false,
     created: number,

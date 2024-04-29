@@ -24,8 +24,9 @@ export interface PagedAPIResp<T> extends APIResp {
     autoget: Array<T>
 }
 
-export interface ErrorApiResp {
-    error: true
+export interface ErrorApiResp<T = string>{
+    error: true,
+    type?: T,
 }
 
 
