@@ -1,4 +1,4 @@
-import Client from "../";
+import Client, { Packet } from "../";
 import MChats from "./chats";
 import MPosts from "./posts";
 import MUsers from "./users";
@@ -101,15 +101,34 @@ export default class mAPI {
 
     }
 
-    async signUp(username: string, password: string) {
-        // grumble another WS command thats going to be moved to API
-        await this.client.send({
-            "cmd": "gen_account",
-            val: {
-                username: username,
-                pswd: password
-            },
-            listener: "mb.js-login"
+    /**
+    * @description Sign up for an account. Disconnect after use.
+    */
+    signUp(username: string, password: string) {
+
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        let re: Function; let rj: Function;
+        const promise = new Promise((resolve, reject) => {re = resolve; rj = reject})
+
+        this.client.connect();
+        this.client.ws.on("open", () => {
+            this.client.send({
+                "cmd": "gen_account",
+                val: {
+                    username: username,
+                    pswd: password
+                },
+                listener: "mb.js-login"
+            })
         })
+
+        this.client.on('listener-mb.js-login', (data: Packet) => {
+            if (data.val === "I:100 | OK") re();
+            if (data.cmd === "statuscode") rj(data.val);
+
+        });
+
+        return promise;
     }
 }
+

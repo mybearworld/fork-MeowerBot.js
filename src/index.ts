@@ -94,36 +94,17 @@ export default class Client extends EventEmitter {
 
     }
 
-    /**
-    * Connects to the (specified) server, then logs in
-    */
-    login(username: string | null, password: string | null,) {
+    connect() {
         this.ws = new WebSocket(this.server);
-
-        this.ws.on("connect", async () => {
+        this.ws.on("open", () => {
             this.send({
                 "cmd": "direct",
                 "val": {
                     "cmd": "type",
                     "val": "js"
                 }
-            });
-            if (!username || !password) {
-                this.emit("login");
-                return;
-            }
-            this.send({
-                "cmd": "direct",
-                "val": {
-                    "cmd": "authpswd",
-                    "val": {
-                        "username": username,
-                        "pswd": password
-                    }
-                },
-                "listener": "mb.js-login"
-            });
-
+            }); 
+            
             setInterval(() => {
                 if (this.ws.readyState == 1) {
                     this.send({
@@ -132,27 +113,6 @@ export default class Client extends EventEmitter {
                     });
                 }
             }, 10000);
-
-            this.on('listener-mb.js-login', async (packet: Packet) => {
-                log.debug("Got login packet!")
-                if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
-                    log.error(`[Meower] Failed to login: ${packet.val}`);
-                    this.emit('.error', Error(`Failed to login: ${packet.val}`));
-                    return;
-                } else if (packet.val.mode === undefined) return;
-
-                this.user = packet.val.payload;
-                try {
-                    const chats =  Object.fromEntries(((await this.api.chats.get(1)).body as PagedAPIResp<Chat>).autoget.map((chat: Chat) => {
-                        return [chat._id, chat];
-                    }));
-                    this.user.extra = {chats: chats};
-                    this.emit("login");
-                } catch (e) {
-                    log.error(e);
-                    this.emit('.error', e);
-                }
-            });
 
             this.ws.on("close", () => {
                 this.emit("close");
@@ -196,6 +156,56 @@ export default class Client extends EventEmitter {
                 }
             });
         });
+
+    }
+
+    /**
+    * Connects to the (specified) server, then logs in
+    */
+    login(username: string | null, password: string | null) {
+        this.connect();
+        this.ws.on("connect", async () => {
+
+            if (!username || !password) {
+                this.emit("login");
+                return;
+            }
+            this.send({
+                "cmd": "direct",
+                "val": {
+                    "cmd": "authpswd",
+                    "val": {
+                        "username": username,
+                        "pswd": password
+                    }
+                },
+                "listener": "mb.js-login"
+            });
+
+
+
+            this.on('listener-mb.js-login', async (packet: Packet) => {
+                log.debug("Got login packet!")
+                if (packet.val.mode === undefined && packet.val !== "I:100 | OK") {
+                    log.error(`[Meower] Failed to login: ${packet.val}`);
+                    this.emit('.error', Error(`Failed to login: ${packet.val}`));
+                    return;
+                } else if (packet.val.mode === undefined) return;
+
+                this.user = packet.val.payload;
+                try {
+                    const chats = Object.fromEntries(((await this.api.chats.get(1)).body as PagedAPIResp<Chat>).autoget.map((chat: Chat) => {
+                        return [chat._id, chat];
+                    }));
+                    this.user.extra = { chats: chats };
+                    this.emit("login");
+                } catch (e) {
+                    log.error(e);
+                    this.emit('.error', e);
+                }
+            });
+
+        })
     }
 
     handleBridgedPost(post: Post): Post {
