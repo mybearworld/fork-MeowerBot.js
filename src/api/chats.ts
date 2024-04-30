@@ -8,7 +8,7 @@ export interface Chat {
     allow_pinning: boolean,
     created: number,
     deleted: boolean,
-    icon: string,
+    icon: string | null,
     icon_color: string,
     last_active: number,
     members: Array<string>,
@@ -40,6 +40,7 @@ type ChatResp = {
 };
 
 export default class MChats {
+
     root: mAPI;
     client: Client;
     cache: Map<string, Chat> & {lastPage: number} = new Map() as any;
@@ -48,7 +49,37 @@ export default class MChats {
         this.root = root;
         this.client = this.root.client;
     }
+    async getSingleChat(id: string): Promise<{
+        body: ErrorApiResp | Chat & APIResp,
+        status: number
+    }> {
+        if (this.cache.has(id)) {
+            return {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                body: this.cache.get(id),
+                status: 200
+            }
+        }
 
+        const resp = await fetch(`${this.root.apiUrl}/chats/${id}`, {
+            headers: { token: this.client.user.token }
+        })
+
+        const data = await resp.json()
+        if (!data.error && !_checkIfChat(data)) {
+            return {
+                body: { error: true },
+                status: 500
+            }
+        }
+
+        this.cache.set(id, data)
+        return {
+            body: data,
+            status: resp.status
+        }
+    }
     async get(page: number): Promise<ChatResp> {
         if (this.cache.lastPage >= page) {
             return {

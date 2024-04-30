@@ -3,6 +3,7 @@ import { Client } from "../"
 import * as log from 'loglevel';
 
 export interface Post {
+    pinned: boolean;
     bridged?: Post;
     _id: string
     isDeleted: boolean,
@@ -55,6 +56,41 @@ export default class MPosts {
     constructor(root: mAPI) {
         this.root = root;
         this.client = this.root.client;
+    }
+
+    async getSinglePost(chatId: string, postId: string): Promise<{
+        status: number,
+        body: ErrorApiResp | Post & APIResp
+    }> {
+        if (this.cache.has(chatId) && this.cache.get(chatId)!.has(postId)) {
+            return {
+                status: 200,
+                
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                body: this.cache.get(chatId)!.get(postId)!
+            }
+        }
+
+        const request = await fetch(`${this.root.apiUrl}/posts/${postId}`, {
+            method: "GET",
+            headers: {
+                token: this.client.user?.token
+            }
+        })
+
+        const data: Post & APIResp = await request.json()
+        if (!isPost(data)) {
+            return {
+                status: 500,
+                body: {error: true}
+            }
+        }
+
+        return {
+            status: request.status,
+            body: data
+        }
     }
 
 

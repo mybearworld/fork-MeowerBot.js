@@ -4,6 +4,7 @@ import WebSocket from './WSWrapper';
 import * as log from 'loglevel';
 import { Post } from "./api/posts";
 import { Chat } from "./api/chats";
+import { WrapperManager } from "./typeWrappers";
 
 
 if (typeof window === "undefined" || window === null) {
@@ -79,6 +80,7 @@ export default class Client extends EventEmitter {
     api: mAPI;
     server: string;
     apiUrl: string;
+    data: WrapperManager;
 
     constructor(server = "wss://server.meower.org/", api = "https://api.meower.org") {
         super();
@@ -90,6 +92,8 @@ export default class Client extends EventEmitter {
             client: this,
             apiUrl: api
         })
+
+        this.data = new WrapperManager(this);
 
 
     }
